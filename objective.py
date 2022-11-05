@@ -1,38 +1,45 @@
 from benchopt import BaseObjective, safe_import_context
 
-# Protect import to allow manipulating objective without importing library
-# Useful for autocompletion and install commands
 with safe_import_context() as import_ctx:
     import numpy as np
 
 
 class Objective(BaseObjective):
-    name = "Ordinary Least Squares"
+    name = "L0-penalized Least-squares problem with Big-M constraint"
 
-    # All parameters 'p' defined here are available as 'self.p'
     parameters = {
-        'fit_intercept': [False],
+        "fit_intercept": [False],
+        "reg": [0.5, 0.1, 0.05],
     }
 
+    def __init__(self, reg=0.1, fit_intercept=False):
+        self.reg = reg
+        self.fit_intercept = fit_intercept
+
+    def _get_lambda_max(self):
+        return self.M * np.linalg.norm(self.X.dot(self.y), np.inf)
+
     def get_one_solution(self):
-        # Return one solution. This should be compatible with 'self.compute'.
         return np.zeros(self.X.shape[1])
 
-    def set_data(self, X, y):
-        # The keyword arguments of this function are the keys of the `data`
-        # dict in the `get_data` function of the dataset.
-        # They are customizable.
+    def set_data(self, X, y, M):
         self.X, self.y = X, y
+        self.M = M
+        self.lmbd = self.reg * self._get_lambda_max()
 
     def compute(self, beta):
-        # The arguments of this function are the outputs of the
-        # `get_result` method of the solver.
-        # They are customizable.
-        diff = self.y - self.X.dot(beta)
-        return .5 * diff.dot(diff)
+        if np.linalg.norm(beta, np.inf) > self.M:
+            return np.inf
+        r = self.y - self.X.dot(beta)
+        return r.dot(r) / (2.0 * r.shape[0]) + self.lmbd * np.count_nonzero(
+            beta
+        )
 
     def to_dict(self):
-        # The output of this function are the keyword arguments
-        # for the `set_objective` method of the solver.
-        # They are customizable.
-        return dict(X=self.X, y=self.y, fit_intercept=self.fit_intercept)
+        return dict(
+            X=self.X,
+            y=self.y,
+            M=self.M,
+            lmbd=self.lmbd,
+            fit_intercept=self.fit_intercept,
+        )
