@@ -13,16 +13,19 @@ JULIA_SOLVER_FILE = Path(__file__).with_suffix(".jl")
 class Solver(JuliaSolver):
 
     # Config of the solver
-    name = "el0ps"
+    name = "el0ps_bnb"
     stopping_strategy = "tolerance"
-    references = [
-        "To appear"
-    ]
+    references = ["To appear"]
 
     julia_requirements = [
         "El0ps::https://github.com/TheoGuyard/El0ps.jl#master",
         "PyCall",
     ]
+
+    parameters = {"acceleration": [False, True]}
+
+    def __init__(self, acceleration):
+        self.acceleration = acceleration
 
     def set_objective(self, X, y, M, lmbd, fit_intercept=False):
         self.X, self.y = X, y
@@ -32,11 +35,11 @@ class Solver(JuliaSolver):
 
         jl = get_jl_interpreter()
         jl.include(str(JULIA_SOLVER_FILE))
-        self.solve_el0ps = jl.solve_el0ps
+        self.solve_el0ps_bnb = jl.solve_el0ps_bnb
 
     def run(self, tolerance):
-        self.beta = (
-            self.solve_el0ps(self.X, self.y, self.M, self.lmbd, tolerance)
+        self.beta = self.solve_el0ps_bnb(
+            self.X, self.y, self.M, self.lmbd, tolerance, self.acceleration
         )
 
     def get_result(self):

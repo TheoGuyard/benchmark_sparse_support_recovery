@@ -1,13 +1,13 @@
 using El0ps
 
-function solve_el0ps(A, y, M, λ, tolerance)
+function solve_el0ps_bnb(A, y, M, λ, tolerance, acceleration)
 
     solver = BnbSolver(;
         tolgap      = tolerance,
         maxtime     = Inf,
-        dualpruning = true,
-        l0screening = true,
-        l1screening = true,
+        dualpruning = acceleration,
+        l0screening = acceleration,
+        l1screening = acceleration,
         verbosity   = false,
         keeptrace   = false,
     )
