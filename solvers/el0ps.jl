@@ -1,6 +1,6 @@
-include("bnb/El0ps.jl")
+using El0ps
 
-function solve_el0ps(X, y, M, λ, tolerance)
+function solve_el0ps(A, y, M, λ, tolerance)
 
     solver = BnbSolver(;
         tolgap      = tolerance,
@@ -14,7 +14,7 @@ function solve_el0ps(X, y, M, λ, tolerance)
 
     F = LeastSquares()
     G = Bigm(M)
-    problem = Problem(F, G, X, y, λ)
+    problem = Problem(F, G, A, y, λ)
 
     result = optimize(solver, problem)
     println(result)

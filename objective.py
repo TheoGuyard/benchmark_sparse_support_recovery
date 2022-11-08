@@ -17,7 +17,7 @@ class Objective(BaseObjective):
         self.fit_intercept = fit_intercept
 
     def _get_lambda_max(self):
-        return self.M * np.linalg.norm(self.X.dot(self.y), np.inf)
+        return self.M * np.linalg.norm(self.X.T.dot(self.y), np.inf)
 
     def get_one_solution(self):
         return np.zeros(self.X.shape[1])

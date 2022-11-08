@@ -7,7 +7,7 @@ from benchopt.helpers.julia import assert_julia_installed
 with safe_import_context() as import_ctx:
     assert_julia_installed()
 
-JULIA_SOLVER_FILE = str(Path(__file__).with_suffix('.jl'))
+JULIA_SOLVER_FILE = Path(__file__).with_suffix('.jl')
 
 class Solver(JuliaSolver):
 
@@ -21,21 +21,20 @@ class Solver(JuliaSolver):
         '(ICASSP) (pp. 5448-5452). IEEE.'
     ]
 
-    def skip(self, X, y, lmbd, fit_intercept):
-        # XXX - fit intercept is not yet implemented in julia.jl
-        if fit_intercept:
-            return True, f"{self.name} does not handle fit_intercept"
-
-        return False, None
+    julia_requirements = [
+        'El0ps::https://github.com/TheoGuyard/El0ps.jl/#master',
+        'PyCall',
+    ]
 
     def set_objective(self, X, y, M, lmbd, fit_intercept=False):
-        self.X, self.y = X, y, M
+        self.X, self.y = X, y
         self.M = M
         self.lmbd = lmbd
         self.fit_intercept = fit_intercept
 
         jl = get_jl_interpreter()
-        self.solve_el0ps = jl.include(JULIA_SOLVER_FILE)
+        jl.include(str(JULIA_SOLVER_FILE))
+        self.solve_el0ps = jl.solve_el0ps
 
     def run(self, tolerance):
         self.beta = self.solve_el0ps(self.X, self.y, self.M, self.lmbd, tolerance)

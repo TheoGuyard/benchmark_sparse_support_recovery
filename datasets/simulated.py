@@ -18,4 +18,7 @@ class Dataset(BaseDataset):
         rng = np.random.RandomState(self.random_state)
         X = rng.randn(self.n_samples, self.n_features)
         y = rng.randn(self.n_samples)
-        return dict(X=X, y=y)
+        X /= np.linalg.norm(X, 2, axis=0)
+        y /= np.linalg.norm(y, 2)
+        M = 1.
+        return dict(X=X, y=y, M=M)
