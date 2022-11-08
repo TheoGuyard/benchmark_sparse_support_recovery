@@ -25,9 +25,6 @@ class Solver(JuliaSolver):
 
     parameters = {"optimizer": ["scip"]}
 
-    def __init__(self, optimizer):
-        self.optimizer = optimizer
-
     def set_objective(self, X, y, M, lmbd, fit_intercept=False):
         self.X, self.y = X, y
         self.M = M

@@ -24,9 +24,6 @@ class Solver(JuliaSolver):
 
     parameters = {"acceleration": [False, True]}
 
-    def __init__(self, acceleration):
-        self.acceleration = acceleration
-
     def set_objective(self, X, y, M, lmbd, fit_intercept=False):
         self.X, self.y = X, y
         self.M = M
