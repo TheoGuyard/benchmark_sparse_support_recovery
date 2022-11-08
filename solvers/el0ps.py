@@ -16,10 +16,7 @@ class Solver(JuliaSolver):
     name = "el0ps"
     stopping_strategy = "tolerance"
     references = [
-        "Guyard, T., Herzet, C., & Elvira, C. (2022, May). Node-Screening"
-        "Tests For The L0-Penalized Least-Squares Problem. In ICASSP 2022-2022"
-        "IEEE International Conference on Acoustics, Speech and Signal"
-        "Processing (ICASSP) (pp. 5448-5452). IEEE."
+        "To appear"
     ]
 
     julia_requirements = [
