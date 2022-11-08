@@ -23,7 +23,7 @@ class Solver(JuliaSolver):
     ]
 
     julia_requirements = [
-        "El0ps::https://github.com/TheoGuyard/El0ps.jl/#master",
+        "El0ps::https://github.com/TheoGuyard/El0ps.jl#master",
         "PyCall",
     ]
 

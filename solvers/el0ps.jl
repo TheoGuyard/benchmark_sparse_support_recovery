@@ -17,7 +17,6 @@ function solve_el0ps(A, y, M, λ, tolerance)
     problem = Problem(F, G, A, y, λ)
 
     result = optimize(solver, problem)
-    println(result)
 
     return result.x
 end
