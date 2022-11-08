@@ -31,8 +31,8 @@ class Objective(BaseObjective):
         if np.linalg.norm(beta, np.inf) > self.M:
             return np.inf
         r = self.y - self.X.dot(beta)
-        return r.dot(r) / (2.0 * r.shape[0]) + self.lmbd * np.count_nonzero(
-            beta
+        return (
+            r.dot(r) / (2.0 * r.shape[0]) + self.lmbd * np.count_nonzero(beta)
         )
 
     def to_dict(self):

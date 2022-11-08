@@ -20,5 +20,5 @@ class Dataset(BaseDataset):
         y = rng.randn(self.n_samples)
         X /= np.linalg.norm(X, 2, axis=0)
         y /= np.linalg.norm(y, 2)
-        M = 1.
+        M = 1.0
         return dict(X=X, y=y, M=M)
