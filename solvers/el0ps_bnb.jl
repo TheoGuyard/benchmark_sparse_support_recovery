@@ -18,5 +18,5 @@ function solve_el0ps_bnb(A, y, M, λ, tolerance, acceleration)
 
     result = optimize(solver, problem)
 
-    return result.x
+    return result.x, result.relative_gap
 end

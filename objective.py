@@ -9,7 +9,7 @@ class Objective(BaseObjective):
 
     parameters = {
         "fit_intercept": [False],
-        "reg": [0.5, 0.1, 0.05],
+        "reg": [0.1, 0.05, 0.01],
     }
 
     def __init__(self, reg=0.1, fit_intercept=False):
@@ -27,13 +27,16 @@ class Objective(BaseObjective):
         self.M = M
         self.lmbd = self.reg * self._get_lambda_max()
 
-    def compute(self, beta):
-        if np.linalg.norm(beta, np.inf) > self.M:
-            return np.inf
+    def compute(self, result):
+        beta = result['x']
+        relative_gap = result['relative_gap']
+
         r = self.y - self.X.dot(beta)
-        return (
-            r.dot(r) / (2.0 * r.shape[0]) + self.lmbd * np.count_nonzero(beta)
-        )
+        p = r.dot(r) / (2.0 * r.shape[0]) + self.lmbd * np.count_nonzero(beta)
+        return {
+            'value': p,
+            'relative_gap': relative_gap,
+        }
 
     def to_dict(self):
         return dict(

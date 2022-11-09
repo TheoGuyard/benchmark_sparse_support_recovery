@@ -36,9 +36,12 @@ class Solver(JuliaSolver):
         self.solve_el0ps_direct = jl.solve_el0ps_direct
 
     def run(self, tolerance):
-        self.beta = self.solve_el0ps_direct(
+        self.beta, self.relative_gap = self.solve_el0ps_direct(
             self.X, self.y, self.M, self.lmbd, tolerance, self.optimizer
         )
 
     def get_result(self):
-        return self.beta.ravel()
+        return {
+            'x': self.beta.ravel(), 
+            'relative_gap': self.relative_gap,
+        }

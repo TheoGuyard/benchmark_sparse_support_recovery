@@ -35,9 +35,12 @@ class Solver(JuliaSolver):
         self.solve_el0ps_bnb = jl.solve_el0ps_bnb
 
     def run(self, tolerance):
-        self.beta = self.solve_el0ps_bnb(
+        self.beta, self.relative_gap = self.solve_el0ps_bnb(
             self.X, self.y, self.M, self.lmbd, tolerance, self.acceleration
         )
 
     def get_result(self):
-        return self.beta.ravel()
+        return {
+            'x': self.beta.ravel(), 
+            'relative_gap': self.relative_gap,
+        }

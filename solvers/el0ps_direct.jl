@@ -21,5 +21,5 @@ function solve_el0ps_direct(A, y, M, λ, tolerance, optimizer)
 
     result = optimize(solver, problem)
 
-    return result.x
+    return result.x, result.relative_gap
 end
