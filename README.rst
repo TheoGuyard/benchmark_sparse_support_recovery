@@ -7,7 +7,7 @@ Benchopt is a package to simplify and make more transparent and
 reproducible the comparisons of optimization algorithms.
 This benchmark is dedicated to the L0-penalized Least-squares problem with a Big-M constraint which reads :
 
-$$\\min_{w} \\Big\\{ \\tfrac{1}{2n}\\|y-Aw\\|_2^2 + \\lambda \\|w\\|_0 \\ \\ \\textrm{st.} \\ \\ \\|w\\|_{\\infty} \\leq M \\Big\\} $$
+$$\\min_{w} \\Big\\{ \\tfrac{1}{2}\\|y-Aw\\|_2^2 + \\lambda \\|w\\|_0 \\ \\ \\textrm{st.} \\ \\ \\|w\\|_{\\infty} \\leq M \\Big\\} $$
 
 where $n$ (or ``n_samples``) stands for the number of samples, $p$ (or ``n_features``) stands for the number of features and
 

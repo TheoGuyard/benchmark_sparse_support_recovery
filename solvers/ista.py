@@ -7,56 +7,61 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    name = 'ista'
+    name = "ista"
     # stopping_strategy = "tolerance"
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="tolerance"
     )
-    parameters = {"reg_mode": ["1", "2"], "acceleration": [True, False], "debiasing": [True, False]}
+    parameters = {
+        "adapt_lmbd": [True, False],
+        "acceleration": [True, False],
+        "debiasing": [True, False],
+    }
 
-    def set_objective(self, X, y, M, lmbd, fit_intercept):
-        self.X, self.y, self.M, self.lmbd, self.fit_intercept = X, y, M, lmbd, fit_intercept
+    def set_objective(self, X, y, M, lmbd):
+        self.X, self.y, self.M, self.lmbd = X, y, M, lmbd
 
     def run(self, tolerance):
-
-        beta = np.zeros(self.X.shape[1])
-        z = np.copy(beta)
-        L = np.linalg.norm(self.X, ord=2)**2
+        w = np.zeros(self.X.shape[1])
+        z = np.copy(w)
+        L = np.linalg.norm(self.X, ord=2) ** 2
         old_obj = np.inf
 
         it = 0
         while True:
             it += 1
-            beta_old = np.copy(beta)
+            w_old = np.copy(w)
             r = self.y - self.X @ z
-            beta = z + (self.X.T @ r)/L
-            beta = beta*np.maximum(1. - self.lmbd/L/(abs(beta) + 1e-10), 0.)
-            beta = np.clip(beta,-self.M,self.M)
-        
+            w = z + (self.X.T @ r) / L
+            w = w * np.maximum(1.0 - self.lmbd / L / (abs(w) + 1e-10), 0.0)
+            w = np.clip(w, -self.M, self.M)
+
             if self.acceleration:
-                t = (it - 1) / (it+5)
-                z = beta + t * (beta - beta_old)
+                t = (it - 1) / (it + 5)
+                z = w + t * (w - w_old)
             else:
-                z = beta
-            
-            if self.reg_mode == "1":
-                obj = 0.5 * r.dot(r) + self.lmbd * np.linalg.norm(beta, 1)
-            elif self.reg_mode == "2":
-                obj = 0.5 * r.dot(r) + np.sqrt(2. * self.lmbd) * np.linalg.norm(beta, 1)
+                z = w
+
+            if self.adapt_lmbd == "1":
+                obj = 0.5 * r.dot(r) + np.sqrt(
+                    2.0 * self.lmbd
+                ) * np.linalg.norm(w, 1)
             else:
-                raise NotImplementedError
+                obj = 0.5 * r.dot(r) + self.lmbd * np.linalg.norm(w, 1)
 
             if np.abs(old_obj - obj) < tolerance:
                 break
             old_obj = obj
 
         if self.debiasing:
-            S = (beta != 0.)
+            S = w != 0.0
             if np.any(S):
-                res = sci_opt.lsq_linear(self.X[:, S], self.y, (-self.M, self.M))
-                beta[S] = res.x
+                res = sci_opt.lsq_linear(
+                    self.X[:, S], self.y, (-self.M, self.M)
+                )
+                w[S] = res.x
 
-        self.w=beta                  
+        self.w = w
 
     def get_result(self):
         return self.w

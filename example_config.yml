@@ -1,0 +1,14 @@
+objective:
+  - L0-penalized Least-Squares[lmbd_ratio=0.05]
+
+dataset:
+  - simulated[rho=0.9]
+
+solver:
+  - omp
+  - iht
+  - ista[adapt_lmbd=True,acceleration=True,debiasing=True]
+  - l0bnb[ws_iter=0]
+  - gurobi
+
+n-repetitions: 1

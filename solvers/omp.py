@@ -1,4 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -6,15 +7,16 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    name = 'omp'
-    stopping_strategy = "tolerance"
+    name = "omp"
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10, strategy="tolerance"
+    )
     parameters = {}
 
-    def set_objective(self, X, y, M, lmbd, fit_intercept):
-        self.X, self.y, self.M, self.lmbd, self.fit_intercept = X, y, M, lmbd, fit_intercept
+    def set_objective(self, X, y, M, lmbd):
+        self.X, self.y, self.M, self.lmbd = X, y, M, lmbd
 
     def run(self, tolerance):
-
         w = np.zeros(self.X.shape[1])
         r = self.y - self.X @ w
         S = np.zeros(w.shape, dtype=bool)
@@ -31,7 +33,7 @@ class Solver(BaseSolver):
                 break
             old_obj = obj
 
-        self.w = w                  
+        self.w = w
 
     def get_result(self):
         return self.w
