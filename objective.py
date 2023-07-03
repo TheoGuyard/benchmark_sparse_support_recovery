@@ -9,7 +9,7 @@ class Objective(BaseObjective):
 
     parameters = {
         "fit_intercept": [False],
-        "lmbd_ratio": [0.1, 0.05, 0.01],
+        "lmbd_ratio": [0.1, 0.05],
     }
 
     def __init__(self, fit_intercept, lmbd_ratio):
@@ -32,7 +32,11 @@ class Objective(BaseObjective):
         return dict(
             value = 0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
             saturation = np.linalg.norm(w, np.inf) > self.M,
-            n_nnz = np.linalg.norm(w, ord=0)
+            n_nnz = np.linalg.norm(w, ord=0),
+            max_coef = np.argmax(np.abs(w)),
+            min_coef = np.argmin(np.abs(w) * np.abs(w > 0)),
+            lstsq_loss = 0.5 * np.linalg.norm(r, 2)**2,
+            sum_coef = np.sum(np.abs(w)),
         )
 
     def get_objective(self):

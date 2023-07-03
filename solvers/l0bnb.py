@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = 'l0bnb'
     stopping_strategy = "tolerance"
-    parameters = {"ws_iter": [0]}
+    parameters = {"ws_iter": [0, 5, 10]}
 
     def set_objective(self, X, y, M, lmbd, fit_intercept):
         self.X, self.y, self.M, self.lmbd, self.fit_intercept = X, y, M, lmbd, fit_intercept
