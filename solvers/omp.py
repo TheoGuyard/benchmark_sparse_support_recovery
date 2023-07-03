@@ -13,8 +13,8 @@ class Solver(BaseSolver):
     )
     parameters = {}
 
-    def set_objective(self, X, y, M, lmbd):
-        self.X, self.y, self.M, self.lmbd = X, y, M, lmbd
+    def set_objective(self, X, y, M, lmbd, L):
+        self.X, self.y, self.M, self.lmbd, self.L = X, y, M, lmbd, L
 
     def run(self, tolerance):
         w = np.zeros(self.X.shape[1])

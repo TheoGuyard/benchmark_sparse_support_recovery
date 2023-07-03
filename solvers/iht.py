@@ -12,18 +12,17 @@ class Solver(BaseSolver):
     )
     parameters = {}
 
-    def set_objective(self, X, y, M, lmbd):
-        self.X, self.y, self.M, self.lmbd = X, y, M, lmbd
+    def set_objective(self, X, y, M, lmbd, L):
+        self.X, self.y, self.M, self.lmbd, self.L = X, y, M, lmbd, L
 
     def run(self, tolerance):
         w = np.zeros(self.X.shape[1])
-        L = np.linalg.norm(self.X, ord=2) ** 2
         old_obj = np.inf
 
         while True:
             r = self.y - self.X @ w
-            w = w + (self.X.T @ r) / L
-            w = w * (abs(w) > np.sqrt(2 * self.lmbd / L))
+            w = w + (self.X.T @ r) / self.L
+            w = w * (abs(w) > np.sqrt(2 * self.lmbd / self.L))
             w = np.clip(w, -self.M, self.M)
             obj = 0.5 * r.dot(r) + self.lmbd * np.linalg.norm(w, 0)
             if np.abs(old_obj - obj) < tolerance:

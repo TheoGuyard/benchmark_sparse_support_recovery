@@ -8,7 +8,6 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "ista"
-    # stopping_strategy = "tolerance"
     stopping_criterion = SufficientProgressCriterion(
         patience=10, strategy="tolerance"
     )
@@ -18,13 +17,12 @@ class Solver(BaseSolver):
         "debiasing": [True, False],
     }
 
-    def set_objective(self, X, y, M, lmbd):
-        self.X, self.y, self.M, self.lmbd = X, y, M, lmbd
+    def set_objective(self, X, y, M, lmbd, L):
+        self.X, self.y, self.M, self.lmbd, self.L = X, y, M, lmbd, L
 
     def run(self, tolerance):
         w = np.zeros(self.X.shape[1])
         z = np.copy(w)
-        L = np.linalg.norm(self.X, ord=2) ** 2
         old_obj = np.inf
 
         it = 0
@@ -32,8 +30,8 @@ class Solver(BaseSolver):
             it += 1
             w_old = np.copy(w)
             r = self.y - self.X @ z
-            w = z + (self.X.T @ r) / L
-            w = w * np.maximum(1.0 - self.lmbd / L / (abs(w) + 1e-10), 0.0)
+            w = z + (self.X.T @ r) / self.L
+            w = w * np.maximum(1.0 - self.lmbd / self.L / (abs(w) + 1e-10), 0.0)
             w = np.clip(w, -self.M, self.M)
 
             if self.acceleration:

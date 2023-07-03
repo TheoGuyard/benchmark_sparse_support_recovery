@@ -1,5 +1,5 @@
 objective:
-  - L0-penalized Least-Squares[lmbd_ratio=0.05]
+  - L0-penalized Least-Squares
 
 dataset:
   - simulated[rho=0.9]
@@ -11,4 +11,4 @@ solver:
   - l0bnb[ws_iter=0]
   - gurobi
 
-n-repetitions: 1
+n-repetitions: 10
