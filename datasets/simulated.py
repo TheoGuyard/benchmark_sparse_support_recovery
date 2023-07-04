@@ -10,8 +10,8 @@ class Dataset(BaseDataset):
     parameters = {
         "n_samples, n_features, n_nnz, rho": [
             (50, 100, 5, 0.1),
-            (50, 100, 5, 0.9),
-            (50, 100, 5, 0.99),
+            #(50, 100, 5, 0.9),
+            #(50, 100, 5, 0.99),
         ],
     }
 

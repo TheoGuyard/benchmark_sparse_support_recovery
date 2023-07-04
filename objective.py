@@ -15,7 +15,7 @@ class Objective(BaseObjective):
         self.lmbd_ratio = lmbd_ratio
 
     def _get_lmbd_max(self):
-        return 1.5 * np.linalg.norm(self.X.T.dot(self.y), np.inf)
+        return self.M * np.linalg.norm(self.X.T.dot(self.y), np.inf)
 
     def get_one_solution(self):
         return np.zeros(self.X.shape[1])
@@ -33,8 +33,8 @@ class Objective(BaseObjective):
         S = w != 0.0
         Strue = self.w_true != 0.0
         acc = np.sum(S * Strue) / np.sum(S) if np.any(S) else 1.0
-        rec = np.sum(S * Strue) / np.sum(Strue) if np.any(S) else 1.0
-        fscore = 0.0 if acc + rec == 0.0 else (2 * acc * rec) / (acc + rec)
+        rec = np.sum(S * Strue) / np.sum(Strue) if np.any(Strue) else 1.0
+        fscore = 0.0 if (acc + rec == 0.0) else (2 * acc * rec) / (acc + rec)
 
         return dict(
             value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),

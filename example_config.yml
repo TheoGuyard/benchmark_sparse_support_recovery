@@ -8,7 +8,8 @@ solver:
   - omp
   - iht
   - ista[adapt_lmbd=True,acceleration=True,debiasing=True]
-  - l0bnb[ws_iter=0]
+  - l0bnb
   - gurobi
+  - el0ps
 
 n-repetitions: 10
