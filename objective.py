@@ -8,7 +8,7 @@ class Objective(BaseObjective):
     name = "L0-penalized Least-Squares"
 
     parameters = {
-        "lmbd_ratio": [0.1, 0.05, 0.03],
+        "lmbd_ratio": [0.5, 0.1, 0.05, 0.01],
     }
 
     def __init__(self, lmbd_ratio):
@@ -30,18 +30,37 @@ class Objective(BaseObjective):
         
     def compute(self, w):
         r = self.y - self.X.dot(w)
-        S = w != 0.0
-        Strue = self.w_true != 0.0
-        acc = np.sum(S * Strue) / np.sum(S) if np.any(S) else 1.0
-        rec = np.sum(S * Strue) / np.sum(Strue) if np.any(Strue) else 1.0
-        fscore = 0.0 if (acc + rec == 0.0) else (2 * acc * rec) / (acc + rec)
 
-        return dict(
-            value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
-            datafit_loss=0.5 * r.dot(r) ** 2,
-            n_nnz=np.linalg.norm(w, ord=0),
-            fscore=fscore,
-        )
+        if self.w_true is None:
+            return dict(
+                value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
+                datafit_loss=0.5 * r.dot(r) ** 2,
+                n_nnz=np.linalg.norm(w, ord=0),
+            )
+        else:
+            P = self.w_true != 0.0
+            N = self.w_true == 0.0
+            PP = w != 0.0
+            PN = w == 0.0
+            tp = np.sum(P * PP)
+            fp = np.sum(N * PP)
+            tn = np.sum(N * PN)
+            fn = np.sum(P * PN)
+            tpr = tp / np.sum(P) if np.sum(P) else 1.0
+            tnr = tn / np.sum(N) if np.sum(N) else 1.0
+            fscore = (2 * tp) / (2 * tp + fp + fn) if 2 * tp + fp + fn else 1.0
+            return dict(
+                value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
+                datafit_loss=0.5 * r.dot(r) ** 2,
+                n_nnz=np.linalg.norm(w, ord=0),
+                tp=tp,
+                fp=fp,
+                tn=tn,
+                fn=fn,
+                tpr=tpr,
+                tnr=tnr,
+                fscore=fscore,
+            )
 
     def get_objective(self):
         return dict(
