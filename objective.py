@@ -8,7 +8,7 @@ class Objective(BaseObjective):
     name = "L0-penalized Least-Squares"
 
     parameters = {
-        "lmbd_ratio": [0.5, 0.1, 0.05, 0.01],
+        "lmbd_ratio": [0.1, 0.05, 0.03],
     }
 
     def __init__(self, lmbd_ratio):
