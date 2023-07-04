@@ -40,7 +40,7 @@ class Solver(BaseSolver):
             else:
                 z = w
 
-            if self.adapt_lmbd == "1":
+            if self.adapt_lmbd:
                 obj = 0.5 * r.dot(r) + np.sqrt(
                     2.0 * self.lmbd
                 ) * np.linalg.norm(w, 1)
