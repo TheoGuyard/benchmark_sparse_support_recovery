@@ -8,10 +8,10 @@ class Dataset(BaseDataset):
     name = "simulated"
 
     parameters = {
-        "n_samples, n_features, n_nnz, rho": [
-            (50, 100, 5, 0.1),
-            #(50, 100, 5, 0.9),
-            #(50, 100, 5, 0.99),
+        "n_samples, n_features, n_nnz, rho, isnr": [
+            (50, 100, 5, 0.1, 10),
+            (50, 100, 5, 0.9, 10),
+            (50, 100, 5, 0.99, 10),
         ],
     }
 
@@ -21,14 +21,14 @@ class Dataset(BaseDataset):
         n_features=50,
         n_nnz=2,
         rho=0.9,
-        snr=10,
+        isnr=10,
         random_state=27,
     ):
         self.n_samples = n_samples
         self.n_features = n_features
         self.n_nnz = n_nnz
         self.rho = rho
-        self.snr = snr
+        self.isnr = isnr
         self.random_state = random_state
 
     def get_data(self):
@@ -36,7 +36,7 @@ class Dataset(BaseDataset):
             n_samples=self.n_samples,
             n_features=self.n_features,
             rho=self.rho,
-            snr=self.snr,
+            snr=self.isnr,
             density=self.n_nnz / self.n_features,
             random_state=self.random_state,
         )

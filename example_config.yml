@@ -2,14 +2,14 @@ objective:
   - L0-penalized Least-Squares
 
 dataset:
-  - simulated[rho=0.1]
+  - simulated
+  - Bourguignon
 
 solver:
   - omp
   - iht
-  - ista[adapt_lmbd=True,acceleration=True,debiasing=True]
+  - iht_warm
+  - ista[acceleration=True,debiasing=True]
   - l0bnb
-  # - gurobi
-  # - el0ps
 
-# n-repetitions: 10
+n-repetitions: 1
