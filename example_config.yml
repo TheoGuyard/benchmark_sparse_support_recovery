@@ -1,15 +1,22 @@
 objective:
-  - L0-penalized Least-Squares
+  - Sparse linear methods
 
 dataset:
   - simulated
-  - Bourguignon
+  # - deconvolution
+  # - libsvm[dataset=housing]
 
 solver:
+  # - omp
+  # - iht
+  # - ista[acceleration=True]
+  # - l0bnb
+  # - gurobi
+  # - el0ps
+  # - l0l2reg
   - omp
-  - iht
-  - iht_warm
-  - ista[acceleration=True,debiasing=True]
-  - l0bnb
+  - l0constraint
+  # - l1l2reg
 
 n-repetitions: 1
+timeout: 60

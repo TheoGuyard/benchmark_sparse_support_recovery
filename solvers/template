@@ -1,0 +1,42 @@
+from benchopt import BaseSolver, safe_import_context
+from benchopt.stopping_criterion import SufficientProgressCriterion
+
+with safe_import_context() as import_ctx:
+    import time, sys
+    import numpy as np
+    from skglm import Lasso
+
+
+class Solver(BaseSolver):
+    name = ""
+    parameters = {}
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10, strategy="iteration"
+    )
+
+    def set_objective(self, X, y, rho_grid, fit_intercept):
+        self.X = X
+        self.y = y
+        self.rho_grid = rho_grid
+        self.fit_intercept = fit_intercept
+
+        # Current value of rho evaluated at an iteration. It is returned with
+        # the result to compute the different objectives.
+        self.rho_curr = rho_grid[0]
+
+        # Solution of the solver corresponding to the current value of rho. It
+        # is stored to be used as warm-start for the next-value of rho.
+        self.w_curr = np.zeros(self.X.shape[1])
+
+    def get_next(self, iteration):
+        return min(iteration + 1, self.rho_grid.size - 1)
+
+    def run(self, iteration):
+        self.rho_curr = self.rho_grid[iteration]
+        start_time = time.time()
+        w = solve_the_problem_with_the_current_rho()  # complete
+        self.time_curr = time.time() - start_time
+        self.w_curr = w
+
+    def get_result(self):
+        return [self.rho_curr, self.time_curr, self.w_curr]

@@ -2,38 +2,42 @@ from benchopt import BaseSolver, safe_import_context
 from benchopt.stopping_criterion import SufficientProgressCriterion
 
 with safe_import_context() as import_ctx:
+    import time
     import numpy as np
-    from scipy import optimize as sci_opt
+    from sklearn.linear_model import OrthogonalMatchingPursuit
 
 
 class Solver(BaseSolver):
+
     name = "omp"
-    stopping_criterion = SufficientProgressCriterion(
-        patience=10, strategy="tolerance"
-    )
     parameters = {}
+    stopping_criterion = SufficientProgressCriterion(
+        patience=10, strategy="iteration"
+    )
 
-    def set_objective(self, X, y, M, lmbd, L):
-        self.X, self.y, self.M, self.lmbd, self.L = X, y, M, lmbd, L
+    def set_objective(self, X, y, fit_intercept):
+        self.X = X
+        self.y = y
+        self.fit_intercept = fit_intercept
 
-    def run(self, tolerance):
-        w = np.zeros(self.X.shape[1])
-        r = self.y - self.X @ w
-        S = np.zeros(w.shape, dtype=bool)
-        old_obj = np.inf
+    def get_next(self, iteration):
+        return min(iteration + 1, self.X.shape[1])
 
-        for it in range(self.X.shape[1]):
-            new_i = np.argmax(self.X.T @ r)
-            S[new_i] = True
-            res = sci_opt.lsq_linear(self.X[:, S], self.y, (-self.M, self.M))
-            w[S] = res.x
-            r = self.y - self.X @ w
-            obj = 0.5 * r.dot(r) + self.lmbd * np.sum(S)
-            if np.abs(old_obj - obj) < tolerance:
-                break
-            old_obj = obj
+    def run(self, iteration):
 
-        self.w = w
+        if iteration == 0:
+            start_time = time.time()
+            self.w = np.zeros(self.X.shape[1])
+            self.time = time.time() - start_time
+        else:
+            solver = OrthogonalMatchingPursuit(
+                n_nonzero_coefs = iteration,
+                fit_intercept = self.fit_intercept
+            )
+            start_time = time.time()
+            solver.fit(self.X, self.y)
+            self.w = solver.coef_.flatten()
+            self.time = time.time() - start_time
 
     def get_result(self):
-        return self.w
+        return [self.time, self.w]
