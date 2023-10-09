@@ -3,12 +3,12 @@ from benchopt import BaseSolver, safe_import_context
 with safe_import_context() as import_ctx:
     import time
     import numpy as np
-    from sklearn.linear_model import OrthogonalMatchingPursuit
+    from sklearn.linear_model import Lars
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
-    name = "omp"
+    name = "lars"
     stopping_criterion = RunOnGridCriterion()
 
     def set_objective(self, X, y):
@@ -22,9 +22,7 @@ class Solver(BaseSolver):
             self.w = np.zeros(self.X.shape[1])
             self.solve_time = time.time() - start_time
         else:
-            solver = OrthogonalMatchingPursuit(
-                n_nonzero_coefs=k, fit_intercept=False
-            )
+            solver = Lars(n_nonzero_coefs=k, fit_intercept=False)
             start_time = time.time()
             solver.fit(self.X, self.y)
             self.w = solver.coef_.flatten()

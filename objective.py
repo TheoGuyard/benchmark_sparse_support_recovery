@@ -5,68 +5,44 @@ with safe_import_context() as import_ctx:
 
 
 class Objective(BaseObjective):
-    name = "L0-penalized Least-Squares"
+    name = "Sparse support recovery"
+    parameters = {}
 
-    parameters = {
-        "lmbd_ratio": [0.5, 0.1, 0.05, 0.01],
-    }
+    def __init__(self):
+        pass
 
-    def __init__(self, lmbd_ratio):
-        self.lmbd_ratio = lmbd_ratio
-
-    def _get_lmbd_max(self):
-        return self.M * np.linalg.norm(self.X.T.dot(self.y), np.inf)
-
-    def get_one_solution(self):
-        return np.zeros(self.X.shape[1])
-
-    def set_data(self, X, y, M, w_true):
+    def set_data(self, X, y, w_true):
         self.X = X
         self.y = y
-        self.M = M
         self.w_true = w_true
-        self.L = np.linalg.norm(self.X, ord=2) ** 2
-        self.lmbd = self.lmbd_ratio * self._get_lmbd_max()
-        
-    def compute(self, w):
-        r = self.y - self.X.dot(w)
 
-        if self.w_true is None:
-            return dict(
-                value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
-                datafit_loss=0.5 * r.dot(r) ** 2,
-                n_nnz=np.linalg.norm(w, ord=0),
-            )
-        else:
-            P = self.w_true != 0.0
-            N = self.w_true == 0.0
-            PP = w != 0.0
-            PN = w == 0.0
-            tp = np.sum(P * PP)
-            fp = np.sum(N * PP)
-            tn = np.sum(N * PN)
-            fn = np.sum(P * PN)
-            tpr = tp / np.sum(P) if np.sum(P) else 1.0
-            tnr = tn / np.sum(N) if np.sum(N) else 1.0
-            fscore = (2 * tp) / (2 * tp + fp + fn) if 2 * tp + fp + fn else 1.0
-            return dict(
-                value=0.5 * r.dot(r) + self.lmbd * np.count_nonzero(w),
-                datafit_loss=0.5 * r.dot(r) ** 2,
-                n_nnz=np.linalg.norm(w, ord=0),
-                tp=tp,
-                fp=fp,
-                tn=tn,
-                fn=fn,
-                tpr=tpr,
-                tnr=tnr,
-                fscore=fscore,
-            )
+    def get_one_result(self):
+        return np.zeros(self.X.shape[1])
+
+    def evaluate_result(self, w, solve_time):
+        value = 0.5 * np.linalg.norm(self.y - self.X @ w, 2) ** 2
+        n_nnz = np.linalg.norm(w, 0)
+        snr_w = np.linalg.norm(self.w_true, 2) / np.linalg.norm(
+            self.w_true - w, 2
+        )
+        snr_y = np.linalg.norm(self.y, 2) / np.linalg.norm(
+            self.y - self.X @ w, 2
+        )
+        fpr = np.sum((self.w_true == 0.0) * (w != 0.0)) / np.sum(
+            self.w_true != 0.0
+        )
+        fnr = np.sum((self.w_true != 0.0) * (w == 0.0)) / np.sum(
+            self.w_true == 0.0
+        )
+        return dict(
+            value=value,
+            n_nnz=n_nnz,
+            solve_time=solve_time,
+            snr_w=snr_w,
+            snr_y=snr_y,
+            fpr=fpr,
+            fnr=fnr,
+        )
 
     def get_objective(self):
-        return dict(
-            X=self.X,
-            y=self.y,
-            M=self.M,
-            lmbd=self.lmbd,
-            L=self.L,
-        )
+        return dict(X=self.X, y=self.y)

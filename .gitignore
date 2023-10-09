@@ -1,3 +1,6 @@
+# Venv
+.venv
+
 # Cache directories
 .pytest_cache
 __pycache__
@@ -6,13 +9,11 @@ __cache__
 .coverage
 **/outputs
 joblib/
+coverage.xml
 
 # IDE specific folders
 .vscode
+.DS_Store
 
 # Config files
 benchopt.ini
-
-.DS_Store
-coverage.xml
-old
