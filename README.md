@@ -32,16 +32,12 @@ Visit [Benchopt documentation](https://benchopt.github.io/api.html) for more det
 ## Datasets
 
 A dataset must provide the data $y$ and $X$.
-Optionnally, it can give the ground truth solution $w^{\dagger}$ and the solution of the problem
-$$\min \tfrac{1}{2}\|y-Xw\|_2^2 \quad \text{s.t.} \quad \|w\|_0 \leq k$$ 
-for different values of $k$.
-Some of the performance metrics will only be evaluated if $w^{\dagger}$ and/or $\{w^{\dagger}_k\}_{k \in N}$ are provided.
+Optionnally, it can give the ground truth solution $w^{\dagger}$ and the solution of the L0-constrained least-squares problem $w^{\ell_0}$ where the sparsity amount targeted is the one of the ground truth.
+Some of the performance metrics will only be evaluated if $w^{\dagger}$ and/or $w^{\ell_0}$ are provided.
 
 Currently, the following datasets are available:
 
-* **Simulated:** The data is generated via the `make_correlated_data` function available in [benchopt](https://benchopt.github.io). The size of the matrix $X$, its correlation amount, the noise level in $y$ and the sparsity density in the ground truth can be specified.
-  * [x] $w^{\dagger}$ available
-  * [ ] $\{w^{\dagger}_k\}_{k \in N}$ not available yet
+* **Simulated:** The data is generated via the `make_correlated_data` function available in [benchopt](https://benchopt.github.io). The size of the matrix $X$, its correlation amount, the noise level in $y$ and the sparsity density in the ground truth can be specified. The ground truth $w^{\dagger}$ is available but $w^{\ell_0}$ is not available yet.
 
 ## Solvers
 
