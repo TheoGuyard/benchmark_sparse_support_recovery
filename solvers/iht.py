@@ -21,16 +21,17 @@ class Solver(BaseSolver):
         k = int(np.floor(iteration * self.X.shape[0]))
         w = np.zeros(self.X.shape[1])
         old_obj = np.inf
-        for _ in range(self.maxit):
-            r = self.y - self.X @ w
-            z = w + (self.X.T @ r) / self.L
-            s = np.argsort(np.abs(w))[::-1][:k]
-            w = np.zeros(self.X.shape[1])
-            w[s] = z[s]
-            obj = 0.5 * (r @ r)
-            if (np.abs(old_obj - obj) / obj) < self.rel_tol:
-                break
-            old_obj = obj
+        for k_ws in range(k+1):
+            for _ in range(self.maxit):
+                r = self.y - self.X @ w
+                z = w + (self.X.T @ r) / self.L
+                s = np.argsort(np.abs(z))[::-1][:k_ws]
+                w = np.zeros(self.X.shape[1])
+                w[s] = z[s]
+                obj = 0.5 * (r @ r)
+                if (np.abs(old_obj - obj) / obj) < self.rel_tol:
+                    break
+                old_obj = obj
         self.w = w
         self.solve_time = time.time() - start_time
 
