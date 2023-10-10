@@ -14,13 +14,14 @@ class Solver(BaseSolver):
         self.X = X
         self.y = y
 
-    def run(self, iteration):
-        m, n = self.X.shape
-        k = int(np.floor(iteration * m))
-        M = 10.0 * np.max(
-            np.abs(np.linalg.lstsq(self.X, self.y, rcond=None)[0])
-        )
+    def run(self, grid_value):
+        # The grid_value parameter is the current entry in
+        # self.stopping_criterion.grid which is the amount of sparsity we
+        # target in the solution, i.e., the fraction of non-zero entries.
+        k = int(np.floor(grid_value * self.X.shape[1]))
 
+        n = self.X.shape[1]
+        M = 10 * np.max(np.abs(np.linalg.lstsq(self.X, self.y, rcond=None)[0]))
         model = Model()
         w_var = model.addMVar(n, name="w", vtype="C", lb=-np.inf, ub=np.inf)
         z_var = model.addMVar(n, name="z", vtype="B")
@@ -34,8 +35,9 @@ class Solver(BaseSolver):
         model.setParam("IntFeasTol", 1e-8)
         model.optimize()
 
+        self.k = k
         self.w = w_var.X * (z_var.X > 0.5)
         self.solve_time = model.Runtime
 
     def get_result(self):
-        return dict(w=self.w, solve_time=self.solve_time)
+        return dict(k=self.k, w=self.w, solve_time=self.solve_time)
