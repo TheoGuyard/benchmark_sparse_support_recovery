@@ -17,9 +17,11 @@ class RunOnGridCriterion(StoppingCriterion):
         self.grid = grid
         self.grid_idx = 0
 
-    def get_runner_instance(self, max_runs=1, timeout=None, output=None, solver=None):
-        self.kwargs['grid'] = self.grid
-        self.kwargs['grid_idx'] = self.grid_idx
+    def get_runner_instance(
+        self, max_runs=1, timeout=None, output=None, solver=None
+    ):
+        self.kwargs["grid"] = self.grid
+        self.kwargs["grid_idx"] = self.grid_idx
         return super().get_runner_instance(max_runs, timeout, output, solver)
 
     def init_stop_val(self):
