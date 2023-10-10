@@ -10,7 +10,6 @@ __cache__
 **/outputs
 joblib/
 coverage.xml
-**/solutions
 
 # IDE specific folders
 .vscode
