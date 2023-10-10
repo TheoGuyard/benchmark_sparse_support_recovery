@@ -10,15 +10,15 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "l0learn"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
 
-    def set_objective(self, X, y):
+    def set_objective(self, X, y, grid):
         self.X = X
         self.y = y
+        self.stopping_criterion = RunOnGridCriterion(grid=grid)
 
     def run(self, iteration):
         start_time = time.time()
-        k = int(np.floor(iteration * self.X.shape[0]))
+        k = int(np.floor(iteration * self.X.shape[1]))
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             fit_result = l0learn.cvfit(

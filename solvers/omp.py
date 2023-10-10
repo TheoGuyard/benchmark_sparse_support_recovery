@@ -10,15 +10,15 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "omp"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
 
-    def set_objective(self, X, y):
+    def set_objective(self, X, y, grid):
         self.X = X
         self.y = y
+        self.stopping_criterion = RunOnGridCriterion(grid=grid)
 
     def run(self, iteration):
         start_time = time.time()
-        k = int(np.floor(iteration * self.X.shape[0]))
+        k = int(np.floor(iteration * self.X.shape[1]))
         if k == 0:
             self.w = np.zeros(self.X.shape[1])
         else:
