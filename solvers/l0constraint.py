@@ -8,15 +8,15 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "l0constraint"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
 
     def set_objective(self, X, y):
         self.X = X
         self.y = y
 
     def run(self, iteration):
-        n = self.X.shape[1]
-        k = int(np.floor(iteration * n))
+        m, n = self.X.shape
+        k = int(np.floor(iteration * m))
         M = 10.0 * np.max(
             np.abs(np.linalg.lstsq(self.X, self.y, rcond=None)[0])
         )

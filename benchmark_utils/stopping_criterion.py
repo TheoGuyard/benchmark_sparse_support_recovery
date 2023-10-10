@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 class RunOnGridCriterion(StoppingCriterion):
     def __init__(
         self,
-        grid=np.linspace(0, 1, 10),
+        grid=np.linspace(0, 0.1, 10),
         strategy="iteration",
         key_to_monitor="objective_value",
     ):
