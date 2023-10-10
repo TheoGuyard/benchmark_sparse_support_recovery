@@ -8,15 +8,15 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "l0constraint"
-    stopping_criterion = RunOnGridCriterion()
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
 
     def set_objective(self, X, y):
         self.X = X
         self.y = y
-        self.stopping_criterion.reset_grid(list(range(self.X.shape[0] + 1)))
 
-    def run(self, k):
+    def run(self, iteration):
         n = self.X.shape[1]
+        k = int(np.floor(iteration * n))
         M = 10.0 * np.max(
             np.abs(np.linalg.lstsq(self.X, self.y, rcond=None)[0])
         )
@@ -30,8 +30,8 @@ class Solver(BaseSolver):
         model.addConstr(w_var >= -M * z_var)
         model.addConstr(sum(z_var) <= k)
         model.setParam("OutputFlag", 0)
-        model.setParam("MIPGap", 1e-16)
-        model.setParam("IntFeasTol", 1e-9)
+        model.setParam("MIPGap", 1e-8)
+        model.setParam("IntFeasTol", 1e-8)
         model.optimize()
 
         self.w = w_var.X * (z_var.X > 0.5)

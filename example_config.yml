@@ -1,0 +1,12 @@
+objective:
+  - Sparse support recovery
+dataset:
+  - simulated
+solver:
+  - iht
+  - l0constraint
+  - l0learn
+  - lars
+  - omp
+n-repetitions: 1
+timeout: 60

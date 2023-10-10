@@ -8,17 +8,17 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "iht"
-    stopping_criterion = RunOnGridCriterion()
-    parameters = {"maxit": [1_000], "rel_tol": [1e-4]}
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
+    parameters = {"maxit": [1_000], "rel_tol": [1e-8]}
 
     def set_objective(self, X, y):
         self.X = X
         self.y = y
         self.L = np.linalg.norm(self.X, ord=2) ** 2
-        self.stopping_criterion.reset_grid(list(range(self.X.shape[0] + 1)))
 
-    def run(self, k):
+    def run(self, iteration):
         start_time = time.time()
+        k = int(np.floor(iteration * self.X.shape[1]))
         w = np.zeros(self.X.shape[1])
         old_obj = np.inf
         for _ in range(self.maxit):

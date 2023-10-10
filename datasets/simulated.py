@@ -6,7 +6,7 @@ class Dataset(BaseDataset):
     name = "simulated"
     parameters = {
         "n_samples, n_features, density, rho, snr, random_state": [
-            (10, 50, 0.1, 0.9, 10.0, None),
+            (30, 50, 0.1, 0.9, 10.0, None),
         ],
     }
 
