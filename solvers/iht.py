@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "iht"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
     parameters = {"maxit": [1_000], "rel_tol": [1e-8]}
 
     def set_objective(self, X, y):
