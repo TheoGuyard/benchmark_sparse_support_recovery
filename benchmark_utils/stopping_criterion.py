@@ -13,10 +13,10 @@ class RunOnGridCriterion(StoppingCriterion):
         key_to_monitor="objective_value",
     ):
         # TODO: Here, the grid is somewhow cached and the default argument
-        # grid=np.linspace(0, 1, 10) is always used. If in the solvers, we set
-        # stopping_criterion = RunOnGridCriterion(grid=something_else), then
-        # something_else argument will not be taken into account. How to fix
-        # that ?
+        # grid=np.linspace(0, 0.1, 10) is always used. If in the solvers, we 
+        # set stopping_criterion = RunOnGridCriterion(grid=something_else), 
+        # then something_else argument will not be taken into account. How to 
+        # fix that ?
         super().__init__(strategy=strategy, key_to_monitor=key_to_monitor)
         self.grid = grid
         self.grid_idx = 0

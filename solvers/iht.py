@@ -8,17 +8,21 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "iht"
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
     parameters = {"maxit": [1_000], "rel_tol": [1e-8]}
 
-    def set_objective(self, X, y, grid):
+    def set_objective(self, X, y):
         self.X = X
         self.y = y
         self.L = np.linalg.norm(self.X, ord=2) ** 2
-        self.stopping_criterion = RunOnGridCriterion(grid=grid)
 
-    def run(self, iteration):
+    def run(self, grid_value):
+        # The grid_value parameter is the current entry in
+        # self.stopping_criterion.grid which is the amount of sparsity we
+        # target in the solution, i.e., the fraction of non-zero entries.
+        k = int(np.floor(grid_value * self.X.shape[1]))
+
         start_time = time.time()
-        k = int(np.floor(iteration * self.X.shape[1]))
         w = np.zeros(self.X.shape[1])
         old_obj = np.inf
         for k_ws in range(k + 1):
@@ -32,8 +36,9 @@ class Solver(BaseSolver):
                 if (np.abs(old_obj - obj) / obj) < self.rel_tol:
                     break
                 old_obj = obj
+        self.k = k
         self.w = w
         self.solve_time = time.time() - start_time
 
     def get_result(self):
-        return dict(w=self.w, solve_time=self.solve_time)
+        return dict(k=self.k, w=self.w, solve_time=self.solve_time)

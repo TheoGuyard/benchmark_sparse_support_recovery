@@ -3,13 +3,13 @@
 [![Build status](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/workflows/Tests/badge.svg)](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/actions)
 [![Python 3.9](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/release/python-390/)
 
-Benchopt is a package to simplify and make more transparent and
-reproducible the comparisons of optimization algorithms.
+[Benchopt](https://benchopt.github.io) is a package to simplify and make more transparent and
+reproducible the benchmarking of optimization algorithms.
 This benchmark is dedicated to **sparse support recovery problems** where one considers a noisy model
 
 $$y = Xw^{\dagger} + \epsilon$$
 
-of size $(m, n)$ and tries to recover the position of the non-zeros in $w^{\dagger}$ from $y$ and $X$. 
+and tries to recover the position of the non-zeros in $w^{\dagger}$ from $y$ and $X$. 
 
 ## Install
 
@@ -31,20 +31,22 @@ Visit [Benchopt documentation](https://benchopt.github.io/api.html) for more det
 
 ## Datasets
 
-A dataset provides the data $y$, $X$ and potentially $w^{\dagger}$.
-Some of the performance metrics will require $w^{\dagger}$ to be evaluated. 
-If $w^{\dagger}$ is not provided by the dataset, the performance metrics are evaluated with respect to an approximate ground truth $\tilde{w}^{\dagger}$ computed as follows.
-
-**TODO**
+A dataset must provide the data $y$ and $X$.
+Optionnally, it can give the ground truth solution $w^{\dagger}$ and the solution of the problem
+$$\min \tfrac{1}{2}\|y-Xw\|_2^2 \quad \text{s.t.} \quad \|w\|_0 \leq k$$ 
+for different values of $k$.
+Some of the performance metrics will only be evaluated if $w^{\dagger}$ and/or $\{w^{\dagger}_k\}_{k \in N}$ are provided.
 
 Currently, the following datasets are available:
 
-* **Simulated:** The triplet $(y, X, w^{\dagger})$ is generated via the `make_correlated_data` function available in [benchopt](https://benchopt.github.io). The size of the matrix $X$, its correlation amount, the noise level in $y$ and the sparsity level in $w^{\dagger}$ can be specified.
+* **Simulated:** The data is generated via the `make_correlated_data` function available in [benchopt](https://benchopt.github.io). The size of the matrix $X$, its correlation amount, the noise level in $y$ and the sparsity density in the ground truth can be specified.
+  * [x] $w^{\dagger}$ available
+  * [ ] $\{w^{\dagger}_k\}_{k \in N}$ not available yet
 
 ## Solvers
 
-In this bechmark, the `run` method of [benchopt](https://benchopt.github.io) is to be called over a grid of parameters $k \in \{1,\dots,m\}$ specifying the target sparisity level.
-This can be done using the `RunOnGridStoppingCriterion` available in the `benchmark_utils.stopping_criterion` module. See for instance the IHT solver implementation in `solvers.iht`.
+In this bechmark, the `run` method of [benchopt](https://benchopt.github.io) is to be called over a grid of parameters $d \in [0,1]$ where $d$ specifies the target proportion of sparsity.
+This can be done using the `RunOnGridStoppingCriterion` available in the `benchmark_utils.stopping_criterion` module. See for instance the IHT solver implementation in `solvers.iht` to implement new solvers.
 
 Currently, the following solvers are available:
 

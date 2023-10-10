@@ -10,15 +10,19 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "l0learn"
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 1, 10))
 
-    def set_objective(self, X, y, grid):
+    def set_objective(self, X, y):
         self.X = X
         self.y = y
-        self.stopping_criterion = RunOnGridCriterion(grid=grid)
 
-    def run(self, iteration):
+    def run(self, grid_value):
+        # The grid_value parameter is the current entry in
+        # self.stopping_criterion.grid which is the amount of sparsity we
+        # target in the solution, i.e., the fraction of non-zero entries.
+        k = int(np.floor(grid_value * self.X.shape[1]))
+
         start_time = time.time()
-        k = int(np.floor(iteration * self.X.shape[1]))
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             fit_result = l0learn.cvfit(
@@ -29,8 +33,6 @@ class Solver(BaseSolver):
                 intercept=False,
                 max_support_size=k + 1,
             )
-        self.solve_time = time.time() - start_time
-
         best_w = None
         best_cv = np.inf
         for i, gamma in enumerate(fit_result.gamma):
@@ -41,7 +43,9 @@ class Solver(BaseSolver):
                     if fit_result.cv_means[i][j] < best_cv:
                         best_cv = fit_result.cv_means[i][j]
                         best_w = np.copy(w)
+        self.k = k
         self.w = best_w
+        self.solve_time = time.time() - start_time
 
     def get_result(self):
-        return dict(w=self.w, solve_time=self.solve_time)
+        return dict(k=self.k, w=self.w, solve_time=self.solve_time)
