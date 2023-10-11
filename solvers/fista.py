@@ -3,7 +3,6 @@ from benchopt import BaseSolver, safe_import_context
 with safe_import_context() as import_ctx:
     import time
     import numpy as np
-    import warnings
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 

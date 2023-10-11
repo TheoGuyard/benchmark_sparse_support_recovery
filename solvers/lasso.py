@@ -32,7 +32,7 @@ class Solver(BaseSolver):
                 w = solver.coef_.flatten()
                 if np.sum(w != 0) > k:
                     w = wold
-                    break      
+                    break
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time
