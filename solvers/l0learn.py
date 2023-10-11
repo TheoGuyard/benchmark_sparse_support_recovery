@@ -11,6 +11,7 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = "l0learn"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    parameters = {"penalty": ["L0", "L0L1", "L0L2"]}
 
     def set_objective(self, X, y):
         self.X = X
@@ -29,10 +30,14 @@ class Solver(BaseSolver):
                 self.X,
                 self.y,
                 loss="SquaredError",
-                penalty="L0",
+                penalty=self.penalty,
                 intercept=False,
                 max_support_size=k + 1,
             )
+
+        # L0learn fits a regularization path. We return the best k-sparse 
+        # solution among the path with respect to the cross-validation error 
+        # computed on the least-squares term.
         best_w = None
         best_cv = np.inf
         for i, gamma in enumerate(fit_result.gamma):
