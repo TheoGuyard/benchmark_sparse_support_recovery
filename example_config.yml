@@ -1,15 +1,12 @@
 objective:
-  - L0-penalized Least-Squares
-
+  - Sparse support recovery
 dataset:
   - simulated
-  - Bourguignon
-
 solver:
-  - omp
   - iht
-  - iht_warm
-  - ista[acceleration=True,debiasing=True]
-  - l0bnb
-
+  - l0constraint
+  - l0learn
+  - lars
+  - omp
 n-repetitions: 1
+timeout: 60

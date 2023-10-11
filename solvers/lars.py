@@ -4,12 +4,12 @@ with safe_import_context() as import_ctx:
     import time
     import numpy as np
     import warnings
-    from sklearn.linear_model import OrthogonalMatchingPursuit
+    from sklearn.linear_model import Lars
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
-    name = "omp"
+    name = "lars"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
 
     def set_objective(self, X, y):
@@ -26,9 +26,7 @@ class Solver(BaseSolver):
         if k == 0:
             w = np.zeros(self.X.shape[1])
         else:
-            solver = OrthogonalMatchingPursuit(
-                n_nonzero_coefs=k, fit_intercept=False
-            )
+            solver = Lars(n_nonzero_coefs=k, fit_intercept=False)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 solver.fit(self.X, self.y)

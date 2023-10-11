@@ -1,45 +1,18 @@
-import numpy as np
-
 from benchopt import BaseDataset
 from benchopt.datasets.simulated import make_correlated_data
 
 
 class Dataset(BaseDataset):
     name = "simulated"
-
     parameters = {
-        "n_samples, n_features, n_nnz, rho, isnr": [
-            (50, 100, 5, 0.1, 10),
-            (50, 100, 5, 0.9, 10),
-            (50, 100, 5, 0.99, 10),
+        "n_samples, n_features, density, rho, snr, random_state": [
+            (30, 50, 0.1, 0.9, 10.0, None),
         ],
     }
 
-    def __init__(
-        self,
-        n_samples=10,
-        n_features=50,
-        n_nnz=2,
-        rho=0.9,
-        isnr=10,
-        random_state=27,
-    ):
-        self.n_samples = n_samples
-        self.n_features = n_features
-        self.n_nnz = n_nnz
-        self.rho = rho
-        self.isnr = isnr
-        self.random_state = random_state
+    def __init__(self, **params):
+        self.params = params
 
     def get_data(self):
-        X, y, w_true = make_correlated_data(
-            n_samples=self.n_samples,
-            n_features=self.n_features,
-            rho=self.rho,
-            snr=self.isnr,
-            density=self.n_nnz / self.n_features,
-            random_state=self.random_state,
-        )
-
-        M = np.linalg.norm(w_true, np.inf)
-        return dict(X=X, y=y, w_true=w_true, M=M)
+        X, y, w_true = make_correlated_data(**self.params)
+        return dict(X=X, y=y, w_true=w_true)
