@@ -16,14 +16,16 @@ class Solver(BaseSolver):
         self.y = y
         self.L = np.linalg.norm(self.X, 2) ** 2
         self.lambdaMax = np.linalg.norm(self.X.T @ self.y, np.inf)
-        self.lambdaMin = lambdaMax * 1e-20
+        self.lambdaMin = self.lambdaMax * 1e-20
         self.lambdaNum = 1_000
 
     def run(self, iteration):
         start_time = time.time()
         k = int(np.floor(iteration * self.X.shape[0]))
         w = np.zeros(self.X.shape[1])
-        for lamb in np.logspace(self.lambdaMax, self.lambdaMin, self.lambdaNum):
+        for lamb in np.logspace(
+            self.lambdaMax, self.lambdaMin, self.lambdaNum
+        ):
             wold = w
             z = w
             for it in range(0, self.maxit):
@@ -31,7 +33,9 @@ class Solver(BaseSolver):
                 z = z + self.X.T @ (self.y - self.X @ z) / self.L
                 w = z * np.maximum(0, 1.0 - lamb / self.L / abs(z))
                 z = w + it / (it + 5) * (w - wprev)
-                if np.linalg.norm(w - wprev, 2) < 1e-4 * np.linalg.norm(w) or lamb == self.lambdaMax:
+                if np.linalg.norm(w - wprev, 2) < 1e-4 * np.linalg.norm(w, 2):
+                    break
+                if lamb == self.lambdaMax:
                     break
             if np.sum(w != 0) > k:
                 w = wold
