@@ -11,21 +11,23 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = "lasso"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    parameters = {"maxiter": [10_000]}
 
     def set_objective(self, X, y):
         self.X = X
         self.y = y
+        self.alphaMax = np.linalg.norm(self.X.T @ self.y, np.inf) / self.y.shape[0]
+        self.alphaMin = alphaMax * 1e-15
+        self.alphaNum = 1_000
 
     def run(self, iteration):
         start_time = time.time()
         k = int(np.floor(iteration * self.X.shape[0]))
-        alphaMax = np.linalg.norm(self.X.T@self.y, np.inf)/self.y.shape[0]
-        alphaMin = alphaMax*1e-15
         w = np.zeros(self.X.shape[1])
         if k > 0:
-            for lamb in np.logspace(alphaMax, alphaMin, 1000):
+            for lamb in np.logspace(self.alphaMax, self.alphaMin, self.alphaNum):
                 wold = w
-                solver = Lasso(alpha=lamb, warm_start=True, fit_intercept=False, max_iter=10000)
+                solver = Lasso(alpha=lamb, warm_start=True, fit_intercept=False, max_iter=self.maxiter)
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     solver.fit(self.X, self.y)
