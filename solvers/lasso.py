@@ -16,8 +16,10 @@ class Solver(BaseSolver):
     def set_objective(self, X, y):
         self.X = X
         self.y = y
-        self.alphaMax = np.linalg.norm(self.X.T @ self.y, np.inf) / self.y.shape[0]
-        self.alphaMin = alphaMax * 1e-15
+        self.alphaMax = np.linalg.norm(
+            self.X.T @ self.y, np.inf
+        ) / self.y.shape[0]
+        self.alphaMin = self.alphaMax * 1e-15
         self.alphaNum = 1_000
 
     def run(self, iteration):
@@ -25,9 +27,16 @@ class Solver(BaseSolver):
         k = int(np.floor(iteration * self.X.shape[0]))
         w = np.zeros(self.X.shape[1])
         if k > 0:
-            for lamb in np.logspace(self.alphaMax, self.alphaMin, self.alphaNum):
+            for lamb in np.logspace(
+                self.alphaMax, self.alphaMin, self.alphaNum
+            ):
                 wold = w
-                solver = Lasso(alpha=lamb, warm_start=True, fit_intercept=False, max_iter=self.maxiter)
+                solver = Lasso(
+                    alpha=lamb, 
+                    warm_start=True, 
+                    fit_intercept=False, 
+                    max_iter=self.maxiter,
+                )
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     solver.fit(self.X, self.y)
