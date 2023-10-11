@@ -9,28 +9,29 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = "fista"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    parameters = {"maxit": [500]}
 
     def set_objective(self, X, y):
         self.X = X
         self.y = y
+        self.L = np.linalg.norm(self.X, 2) ** 2
+        self.lambdaMax = np.linalg.norm(self.X.T @ self.y, np.inf)
+        self.lambdaMin = lambdaMax * 1e-20
+        self.lambdaNum = 1_000
 
     def run(self, iteration):
         start_time = time.time()
         k = int(np.floor(iteration * self.X.shape[0]))
-        L = np.linalg.norm(self.X, 2)**2
-        lambdaMax = np.linalg.norm(self.X.T@self.y, np.inf)
-        lambdaMin = lambdaMax*1e-20
-        maxit = 500
         w = np.zeros(self.X.shape[1])
-        for lamb in np.logspace(lambdaMax, lambdaMin, 1000):
+        for lamb in np.logspace(self.lambdaMax, self.lambdaMin, self.lambdaNum):
             wold = w
             z = w
-            for it in range(0, maxit):
+            for it in range(0, self.maxit):
                 wprev = w
-                z = z + self.X.T@(self.y - self.X@z)/L
-                w = z*np.maximum(0, 1-lamb/L/abs(z))
-                z = w + it/(it+5)*(w-wprev)
-                if np.linalg.norm(w-wprev) < 1e-4*np.linalg.norm(w) or lamb == lambdaMax:
+                z = z + self.X.T @ (self.y - self.X @ z) / L
+                w = z * np.maximum(0, 1.0 - lamb / L / abs(z))
+                z = w + it / (it + 5) * (w - wprev)
+                if np.linalg.norm(w - wprev, 2) < 1e-4 * np.linalg.norm(w) or lamb == lambdaMax:
                     break
             if np.sum(w != 0) > k:
                 w = wold
