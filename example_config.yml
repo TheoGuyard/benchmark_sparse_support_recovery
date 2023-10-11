@@ -7,6 +7,8 @@ solver:
   - l0constraint
   - l0learn
   - lars
+  - lasso
+  - fista
   - omp
 n-repetitions: 1
 timeout: 60
