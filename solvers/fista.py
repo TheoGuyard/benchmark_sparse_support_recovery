@@ -28,10 +28,10 @@ class Solver(BaseSolver):
             z = w
             for it in range(0, self.maxit):
                 wprev = w
-                z = z + self.X.T @ (self.y - self.X @ z) / L
-                w = z * np.maximum(0, 1.0 - lamb / L / abs(z))
+                z = z + self.X.T @ (self.y - self.X @ z) / self.L
+                w = z * np.maximum(0, 1.0 - lamb / self.L / abs(z))
                 z = w + it / (it + 5) * (w - wprev)
-                if np.linalg.norm(w - wprev, 2) < 1e-4 * np.linalg.norm(w) or lamb == lambdaMax:
+                if np.linalg.norm(w - wprev, 2) < 1e-4 * np.linalg.norm(w) or lamb == self.lambdaMax:
                     break
             if np.sum(w != 0) > k:
                 w = wold
