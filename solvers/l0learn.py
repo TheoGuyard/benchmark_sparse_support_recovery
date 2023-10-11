@@ -35,8 +35,8 @@ class Solver(BaseSolver):
                 max_support_size=k + 1,
             )
 
-        # L0learn fits a regularization path. We return the best k-sparse 
-        # solution among the path with respect to the cross-validation error 
+        # L0learn fits a regularization path. We return the best k-sparse
+        # solution among the path with respect to the cross-validation error
         # computed on the least-squares term.
         best_w = None
         best_cv = np.inf
