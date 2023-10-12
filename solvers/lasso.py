@@ -16,9 +16,9 @@ class Solver(BaseSolver):
     def set_objective(self, X, y):
         self.X = X
         self.y = y
-        self.alphaMax = np.linalg.norm(
-            self.X.T @ self.y, np.inf
-        ) / self.y.shape[0]
+        self.alphaMax = (
+            np.linalg.norm(self.X.T @ self.y, np.inf) / self.y.shape[0]
+        )
         self.alphaMin = self.alphaMax * 1e-15
         self.alphaNum = 1_000
 
