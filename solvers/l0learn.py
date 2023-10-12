@@ -12,6 +12,7 @@ class Solver(BaseSolver):
     name = "l0learn"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
     parameters = {"penalty": ["L0", "L0L1", "L0L2"]}
+    install_cmd = "conda"
     requirements = ["pip:l0learn"]
 
     def set_objective(self, X, y):
