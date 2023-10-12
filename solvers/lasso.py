@@ -12,6 +12,8 @@ class Solver(BaseSolver):
     name = "lasso"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
     parameters = {"maxiter": [10_000]}
+    install_cmd = "conda"
+    requirements = ["scikit-learn"]
 
     def set_objective(self, X, y):
         self.X = X
