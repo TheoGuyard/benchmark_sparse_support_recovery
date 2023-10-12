@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "fista"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
     parameters = {"maxit": [500]}
 
     def set_objective(self, X, y):
@@ -24,9 +24,11 @@ class Solver(BaseSolver):
         k = int(np.floor(iteration * self.X.shape[0]))
         w = np.zeros(self.X.shape[1])
         for lamb in np.logspace(
-            self.lambdaMax, self.lambdaMin, self.lambdaNum
+            np.log10(self.lambdaMax),
+            np.log10(self.lambdaMin),
+            self.lambdaNum
         ):
-            wold = w
+            w_old = w
             z = w
             for it in range(0, self.maxit):
                 wprev = w
@@ -38,7 +40,7 @@ class Solver(BaseSolver):
                 if lamb == self.lambdaMax:
                     break
             if np.sum(w != 0) > k:
-                w = wold
+                w = w_old
                 break
         self.k = k
         self.w = w

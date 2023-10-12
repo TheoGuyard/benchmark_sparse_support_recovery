@@ -9,7 +9,7 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "skglm"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
     parameters = {
         "estimator": ["lasso", "enet", "mcp"],
         "max_iter": [1_000],
@@ -44,25 +44,20 @@ class Solver(BaseSolver):
         else:
             raise ValueError(f"Unknown estimator {self.estimator}")
 
-        best_w = np.zeros(self.X.shape[1])
-        best_v = np.linalg.norm(self.y, 2) ** 2 / (2.0 * self.y.size)
         start_time = time.time()
+        w = np.zeros(self.X.shape[1])
         for alpha in self.alphaGrid:
+            w_old = w
             solver = solver_class(
                 alpha=alpha, max_iter=self.max_iter, fit_intercept=False
             )
             solver.fit(self.X, self.y)
             w = solver.coef_.flatten()
-            v = np.linalg.norm(self.y - self.X @ w, 2) ** 2 / (
-                2.0 * self.y.size
-            )
-            if np.sum(w != 0) <= k and v < best_v:
-                best_w = w
-                best_v = v
             if np.sum(w != 0) > k:
+                w = w_old
                 break
         self.k = k
-        self.w = best_w
+        self.w = w
         self.solve_time = time.time() - start_time
 
     def get_result(self):
