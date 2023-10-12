@@ -16,7 +16,7 @@ class Solver(BaseSolver):
         "alphaNum": [1_000],
         "alphaRatio": [1e-10],
     }
-    requirements = ["skglm"]
+    requirements = ["pip:skglm"]
 
     def set_objective(self, X, y):
         self.X = X
