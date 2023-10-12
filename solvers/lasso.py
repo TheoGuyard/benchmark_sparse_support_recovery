@@ -32,9 +32,9 @@ class Solver(BaseSolver):
             ):
                 wold = w
                 solver = Lasso(
-                    alpha=lamb, 
-                    warm_start=True, 
-                    fit_intercept=False, 
+                    alpha=lamb,
+                    warm_start=True,
+                    fit_intercept=False,
                     max_iter=self.maxiter,
                 )
                 with warnings.catch_warnings():
