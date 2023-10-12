@@ -3,12 +3,13 @@ objective:
 dataset:
   - simulated
 solver:
+  - fista
   - iht
   - l0constraint
   - l0learn
   - lars
   - lasso
-  - fista
   - omp
+  - skglm
 n-repetitions: 1
 timeout: 60
