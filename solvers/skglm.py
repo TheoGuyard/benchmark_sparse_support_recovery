@@ -3,6 +3,7 @@ from benchopt import BaseSolver, safe_import_context
 with safe_import_context() as import_ctx:
     import time
     import numpy as np
+    from scipy.linalg import lstsq
     from skglm import Lasso, ElasticNet, MCPRegression
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
@@ -15,6 +16,7 @@ class Solver(BaseSolver):
         "max_iter": [1_000],
         "alphaNum": [1_000],
         "alphaRatio": [1e-10],
+        "debiasing_step": [0, 1],
     }
     install_cmd = "conda"
     requirements = ["pip:skglm"]
@@ -58,6 +60,14 @@ class Solver(BaseSolver):
             if np.sum(w != 0) > k:
                 w = w_old
                 break
+
+        if self.debiasing_step:
+            if sum(w != 0) > 0:
+                XX = self.X[:, w != 0]
+                ww = lstsq(XX, self.y)
+                ww = ww[0]
+                w[w != 0] = ww
+
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time

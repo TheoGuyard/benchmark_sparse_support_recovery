@@ -11,6 +11,10 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = "lars"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
+    parameters = {
+        "debiasing_step": [0, 1]
+    }
+    
     install_cmd = "conda"
     requirements = ["scikit-learn"]
 
@@ -33,6 +37,14 @@ class Solver(BaseSolver):
                 warnings.simplefilter("ignore")
                 solver.fit(self.X, self.y)
             w = solver.coef_.flatten()
+   
+        if self.debiasing_step:
+            if sum(w != 0) > 0:
+                XX = self.X[:, w != 0]
+                ww = np.linalg.lstsq(XX, self.y)
+                ww = ww[0]
+                w[w != 0] = ww
+
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time
