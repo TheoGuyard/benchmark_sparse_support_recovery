@@ -10,8 +10,10 @@ with safe_import_context() as import_ctx:
 
 class Solver(BaseSolver):
     name = "lasso"
-    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+    stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
     parameters = {"maxiter": [10_000]}
+    install_cmd = "conda"
+    requirements = ["scikit-learn"]
 
     def set_objective(self, X, y):
         self.X = X
@@ -26,24 +28,25 @@ class Solver(BaseSolver):
         start_time = time.time()
         k = int(np.floor(iteration * self.X.shape[0]))
         w = np.zeros(self.X.shape[1])
-        if k > 0:
-            for lamb in np.logspace(
-                self.alphaMax, self.alphaMin, self.alphaNum
-            ):
-                wold = w
-                solver = Lasso(
-                    alpha=lamb,
-                    warm_start=True,
-                    fit_intercept=False,
-                    max_iter=self.maxiter,
-                )
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    solver.fit(self.X, self.y)
-                w = solver.coef_.flatten()
-                if np.sum(w != 0) > k:
-                    w = wold
-                    break
+        for lamb in np.logspace(
+            np.log10(self.alphaMax),
+            np.log10(self.alphaMin),
+            self.alphaNum
+        ):
+            w_old = w
+            solver = Lasso(
+                alpha=lamb,
+                warm_start=True,
+                fit_intercept=False,
+                max_iter=self.maxiter,
+            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                solver.fit(self.X, self.y)
+            w = solver.coef_.flatten()
+            if np.sum(w != 0) > k:
+                w = w_old
+                break
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time
