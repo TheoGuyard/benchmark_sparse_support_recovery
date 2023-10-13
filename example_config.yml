@@ -8,6 +8,7 @@ solver:
   - l0constraint
   - l0learn
   - lars
+  - lars_debias
   - lasso
   - omp
   - skglm
