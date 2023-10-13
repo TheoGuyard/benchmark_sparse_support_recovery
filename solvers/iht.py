@@ -3,13 +3,18 @@ from benchopt import BaseSolver, safe_import_context
 with safe_import_context() as import_ctx:
     import time
     import numpy as np
+    from scipy.linalg import lstsq
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
     name = "iht"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
-    parameters = {"maxit": [1_000], "rel_tol": [1e-8]}
+    parameters = {
+        "maxit": [1_000],
+        "rel_tol": [1e-8],
+        "debiasing_step": [False, True],
+    }
 
     def set_objective(self, X, y):
         self.X = X
@@ -36,6 +41,14 @@ class Solver(BaseSolver):
                 if (np.abs(old_obj - obj) / obj) < self.rel_tol:
                     break
                 old_obj = obj
+
+        if self.debiasing_step:
+            if sum(w != 0) > 0:
+                XX = self.X[:, w != 0]
+                ww = lstsq(XX, self.y)
+                ww = ww[0]
+                w[w != 0] = ww
+
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time

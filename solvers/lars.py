@@ -5,14 +5,18 @@ with safe_import_context() as import_ctx:
     import numpy as np
     import warnings
     from sklearn.linear_model import Lars
+    from scipy.linalg import lstsq
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
     name = "lars"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
+    parameters = {
+        "debiasing_step": [False, True]
+    }
     install_cmd = "conda"
-    requirements = ["scikit-learn"]
+    requirements = ["scikit-learn", "scipy"]
 
     def set_objective(self, X, y):
         self.X = X
@@ -33,6 +37,14 @@ class Solver(BaseSolver):
                 warnings.simplefilter("ignore")
                 solver.fit(self.X, self.y)
             w = solver.coef_.flatten()
+
+        if self.debiasing_step:
+            if sum(w != 0) > 0:
+                XX = self.X[:, w != 0]
+                ww = lstsq(XX, self.y)
+                ww = ww[0]
+                w[w != 0] = ww
+
         self.k = k
         self.w = w
         self.solve_time = time.time() - start_time

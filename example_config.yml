@@ -3,12 +3,10 @@ objective:
 dataset:
   - simulated
 solver:
-  - fista
   - iht
   - l0constraint
   - l0learn
   - lars
-  - lasso
   - omp
   - skglm
 n-repetitions: 1
