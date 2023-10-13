@@ -5,6 +5,7 @@ with safe_import_context() as import_ctx:
     import numpy as np
     import warnings
     from sklearn.linear_model import Lars
+    from scipy.linalg import lstsq
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
@@ -40,7 +41,7 @@ class Solver(BaseSolver):
         if self.debiasing_step:
             if sum(w != 0) > 0:
                 XX = self.X[:, w != 0]
-                ww = np.linalg.lstsq(XX, self.y)
+                ww = lstsq(XX, self.y)
                 ww = ww[0]
                 w[w != 0] = ww
 
