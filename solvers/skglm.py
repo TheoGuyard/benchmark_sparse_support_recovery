@@ -16,10 +16,10 @@ class Solver(BaseSolver):
         "max_iter": [1_000],
         "alphaNum": [1_000],
         "alphaRatio": [1e-10],
-        "debiasing_step": [0, 1],
+        "debiasing_step": [False, True],
     }
     install_cmd = "conda"
-    requirements = ["pip:skglm"]
+    requirements = ["pip:skglm", "scipy"]
 
     def set_objective(self, X, y):
         self.X = X

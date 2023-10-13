@@ -13,10 +13,10 @@ class Solver(BaseSolver):
     name = "lars"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.3, 10))
     parameters = {
-        "debiasing_step": [0, 1]
+        "debiasing_step": [False, True]
     }
     install_cmd = "conda"
-    requirements = ["scikit-learn"]
+    requirements = ["scikit-learn", "scipy"]
 
     def set_objective(self, X, y):
         self.X = X

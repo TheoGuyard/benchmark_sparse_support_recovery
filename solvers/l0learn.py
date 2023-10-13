@@ -5,13 +5,17 @@ with safe_import_context() as import_ctx:
     import l0learn
     import numpy as np
     import warnings
+    from scipy.linalg import lstsq
     from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
     name = "l0learn"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
-    parameters = {"penalty": ["L0", "L0L1", "L0L2"]}
+    parameters = {
+        "penalty": ["L0", "L0L1", "L0L2"],
+        "debiasing_step": [False, True],
+    }
     install_cmd = "conda"
     requirements = ["pip:l0learn"]
 
@@ -50,6 +54,14 @@ class Solver(BaseSolver):
                     if fit_result.cv_means[i][j] < best_cv:
                         best_cv = fit_result.cv_means[i][j]
                         best_w = np.copy(w)
+
+        if self.debiasing_step:
+            if sum(w != 0) > 0:
+                XX = self.X[:, w != 0]
+                ww = lstsq(XX, self.y)
+                ww = ww[0]
+                w[w != 0] = ww
+
         self.k = k
         self.w = best_w
         self.solve_time = time.time() - start_time
