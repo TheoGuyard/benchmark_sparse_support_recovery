@@ -14,7 +14,6 @@ class Solver(BaseSolver):
     parameters = {
         "debiasing_step": [0, 1]
     }
-    
     install_cmd = "conda"
     requirements = ["scikit-learn"]
 
@@ -37,7 +36,7 @@ class Solver(BaseSolver):
                 warnings.simplefilter("ignore")
                 solver.fit(self.X, self.y)
             w = solver.coef_.flatten()
-   
+
         if self.debiasing_step:
             if sum(w != 0) > 0:
                 XX = self.X[:, w != 0]
