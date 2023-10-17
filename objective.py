@@ -14,15 +14,14 @@ class Objective(BaseObjective):
     name = "Sparse support recovery"
     parameters = {}
 
-    def set_data(self, X, y, w_true=None, w_l0pb={}):
+    def set_data(self, X, y, w_true=None, w_l0pb=None):
         """A dataset must provide the data `X` and `y`. It may also give the
-        ground truth value `w_true` and the solutions of the problem
+        ground truth value `w_true` and the solution `w_l0pb` of the problem
 
             min 0.5 * ||y - Xw||_2^2
             st  ||w||_0 <= k
 
-        for different values of k, stored in the dictionary `w_l0pb` with k as
-        key."""
+        with `k=norm(w_true, 0)`."""
         self.X = X
         self.y = y
         self.w_true = w_true
@@ -46,12 +45,11 @@ class Objective(BaseObjective):
         metrics["solve_time"] = solve_time
 
         # Metrics with respect to the L0-problem solution
-        if k in self.w_l0pb.keys():
-            current_w_l0pb = self.w_l0pb[k]
-            metrics["snr_y_l0pb"] = snr(self.y, self.X @ current_w_l0pb)
-            metrics["snr_w_l0pb"] = snr(current_w_l0pb, w)
-            metrics["fpr_w_l0pb"] = fpr(current_w_l0pb, w)
-            metrics["fnr_w_l0pb"] = fnr(current_w_l0pb, w)
+        if self.w_l0pb is not None:
+            metrics["snr_y_l0pb"] = snr(self.y, self.X @ self.w_l0pb)
+            metrics["snr_w_l0pb"] = snr(self.w_l0pb, w)
+            metrics["fpr_w_l0pb"] = fpr(self.w_l0pb, w)
+            metrics["fnr_w_l0pb"] = fnr(self.w_l0pb, w)
 
         # Metrics with respect to the ground truth solution (if available)
         if self.w_true is not None:
