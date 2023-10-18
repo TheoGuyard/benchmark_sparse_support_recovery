@@ -26,8 +26,6 @@ class Objective(BaseObjective):
         self.y = y
         self.w_true = w_true
         self.w_l0pb = w_l0pb
-        self.roc_w_true = []
-        self.roc_w_l0pb = []
 
     def get_one_result(self):
         return np.zeros(self.X.shape[1])
