@@ -2,6 +2,7 @@ objective:
   - Sparse support recovery
 dataset:
   - simulated
+  - deconvolution
 solver:
   - iht
   - l0constraint

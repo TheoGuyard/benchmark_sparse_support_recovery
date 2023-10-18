@@ -13,7 +13,6 @@ class Solver(BaseSolver):
     name = "l0learn"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
     parameters = {
-        "penalty": ["L0", "L0L1", "L0L2"],
         "debiasing_step": [False, True],
     }
     install_cmd = "conda"
@@ -36,7 +35,7 @@ class Solver(BaseSolver):
                 self.X,
                 self.y,
                 loss="SquaredError",
-                penalty=self.penalty,
+                penalty="L0",
                 intercept=False,
                 max_support_size=k + 1,
             )
@@ -44,16 +43,17 @@ class Solver(BaseSolver):
         # L0learn fits a regularization path. We return the best k-sparse
         # solution among the path with respect to the cross-validation error
         # computed on the least-squares term.
-        best_w = None
+        best_w = np.zeros(self.X.shape[1])
         best_cv = np.inf
         for i, gamma in enumerate(fit_result.gamma):
             for j, lmbda in enumerate(fit_result.lambda_0[i]):
-                w = fit_result.coeff(lmbda, gamma)
-                w = np.array(w.todense()).reshape(w.shape[0])[1:]
-                if np.linalg.norm(w, 0) <= k:
-                    if fit_result.cv_means[i][j] < best_cv:
-                        best_cv = fit_result.cv_means[i][j]
-                        best_w = np.copy(w)
+                if fit_result.cv_means[i][j]:
+                    w = fit_result.coeff(lmbda, gamma)
+                    w = np.array(w.todense()).reshape(w.shape[0])[1:]
+                    if np.linalg.norm(w, 0) <= k:
+                        if fit_result.cv_means[i][j] < best_cv:
+                            best_cv = fit_result.cv_means[i][j]
+                            best_w = np.copy(w)
 
         if self.debiasing_step:
             if sum(w != 0) > 0:

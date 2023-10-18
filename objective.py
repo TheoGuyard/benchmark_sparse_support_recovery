@@ -2,7 +2,7 @@ from benchopt import BaseObjective, safe_import_context
 
 with safe_import_context() as import_ctx:
     import numpy as np
-    from benchmark_utils.metrics import snr, fpr, fnr
+    from benchmark_utils.metrics import snr, fpr, fnr, tpr, tnr, auc
 
 
 class Objective(BaseObjective):
@@ -26,6 +26,8 @@ class Objective(BaseObjective):
         self.y = y
         self.w_true = w_true
         self.w_l0pb = w_l0pb
+        self.roc_w_true = []
+        self.roc_w_l0pb = []
 
     def get_one_result(self):
         return np.zeros(self.X.shape[1])
@@ -44,19 +46,25 @@ class Objective(BaseObjective):
         metrics["snr_y"] = snr(self.y, self.X @ w)
         metrics["solve_time"] = solve_time
 
-        # Metrics with respect to the L0-problem solution
+        # Metrics with respect to the L0-problem solution (if available)
         if self.w_l0pb is not None:
             metrics["snr_y_l0pb"] = snr(self.y, self.X @ self.w_l0pb)
             metrics["snr_w_l0pb"] = snr(self.w_l0pb, w)
+            metrics["tpr_w_l0pb"] = tpr(self.w_l0pb, w)
             metrics["fpr_w_l0pb"] = fpr(self.w_l0pb, w)
+            metrics["tnr_w_l0pb"] = tnr(self.w_l0pb, w)
             metrics["fnr_w_l0pb"] = fnr(self.w_l0pb, w)
+            metrics["auc_w_l0pb"] = auc(self.w_l0pb, w)
 
         # Metrics with respect to the ground truth solution (if available)
         if self.w_true is not None:
             metrics["snr_y_true"] = snr(self.y, self.X @ self.w_true)
             metrics["snr_w_true"] = snr(self.w_true, w)
+            metrics["tpr_w_true"] = tpr(self.w_true, w)
             metrics["fpr_w_true"] = fpr(self.w_true, w)
+            metrics["tnr_w_true"] = tnr(self.w_true, w)
             metrics["fnr_w_true"] = fnr(self.w_true, w)
+            metrics["auc_w_true"] = auc(self.w_l0pb, w)
 
         return metrics
 
