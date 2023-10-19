@@ -2,7 +2,15 @@ from benchopt import BaseObjective, safe_import_context
 
 with safe_import_context() as import_ctx:
     import numpy as np
-    from benchmark_utils.metrics import snr, fpr, fnr, tpr, tnr, auc
+    from benchmark_utils.metrics import (
+        snr,
+        fpr,
+        fnr,
+        tpr,
+        tnr,
+        auc,
+        dist_to_supp,
+    )
 
 
 class Objective(BaseObjective):
@@ -53,6 +61,7 @@ class Objective(BaseObjective):
             metrics["tnr_w_l0pb"] = tnr(self.w_l0pb, w)
             metrics["fnr_w_l0pb"] = fnr(self.w_l0pb, w)
             metrics["auc_w_l0pb"] = auc(self.w_l0pb, w)
+            metrics["dist_to_supp_w_l0pb"] = dist_to_supp(self.w_l0pb, w)
 
         # Metrics with respect to the ground truth solution (if available)
         if self.w_true is not None:
@@ -62,7 +71,8 @@ class Objective(BaseObjective):
             metrics["fpr_w_true"] = fpr(self.w_true, w)
             metrics["tnr_w_true"] = tnr(self.w_true, w)
             metrics["fnr_w_true"] = fnr(self.w_true, w)
-            metrics["auc_w_true"] = auc(self.w_l0pb, w)
+            metrics["auc_w_true"] = auc(self.w_true, w)
+            metrics["dist_to_supp_w_true"] = dist_to_supp(self.w_true, w)
 
         return metrics
 

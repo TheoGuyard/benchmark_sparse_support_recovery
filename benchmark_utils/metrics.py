@@ -63,3 +63,18 @@ def auc(w_true, w, num_rounds=10_000):
         num_pairs += 1
 
     return num_same_sign / num_pairs
+
+
+def dist_to_supp(w_true, w):
+    r"""Given $w^{\dagger}$ and $w$, returns the average minimum distance
+    between a non-zero entry of $w$ and a non-zero entry in $w^{\dagger}$, that
+    is$\frac{1}{n}\sum_{i,w_i \neq 0}\min_{j,w^{\dagger}_j \neq 0} |j - i|$.
+    """
+    s = np.flatnonzero(w)
+    s_true = np.flatnonzero(w_true)
+    if s.size == 0:
+        return 1.0
+    d = 0
+    for i in s:
+        d += np.min(np.abs(s_true - i)) / len(w)
+    return d / len(s)
