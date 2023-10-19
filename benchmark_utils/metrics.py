@@ -66,10 +66,9 @@ def auc(w_true, w, num_rounds=10_000):
 
 
 def dist_to_supp(w_true, w):
-    """Given :math:`w^{\dagger}` and :math:`w`, returns he average closest
-    distance between a non-zero entry of :math:`w` and a non-zero entry in
-    :math:`w^{\dagger}`, that is
-    $\frac{1}{n} \sum_{i, w_i \neq 0} \min_{j, w^{\dagger}_j \neq 0} |j - i|$.
+    r"""Given $w^{\dagger}$ and $w$, returns the average minimum distance
+    between a non-zero entry of $w$ and a non-zero entry in $w^{\dagger}$, that
+    is$\frac{1}{n}\sum_{i,w_i \neq 0}\min_{j,w^{\dagger}_j \neq 0} |j - i|$.
     """
     s = np.flatnonzero(w)
     s_true = np.flatnonzero(w_true)
