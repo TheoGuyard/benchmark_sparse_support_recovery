@@ -3,6 +3,7 @@ objective:
 dataset:
   - simulated
   - deconvolution
+  - lattice
 solver:
   - iht
   - l0constraint
