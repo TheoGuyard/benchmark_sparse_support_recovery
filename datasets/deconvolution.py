@@ -3,7 +3,6 @@ from benchopt import BaseDataset, safe_import_context
 with safe_import_context() as import_ctx:
     import numpy as np
     import pathlib
-    from scipy.io import loadmat
     from benchmark_utils.datasets import compute_w_l0pb
 
 
@@ -18,10 +17,9 @@ class Dataset(BaseDataset):
     def get_data(self):
         if self.random_state:
             np.random.seed(self.random_state)
-        M = loadmat(
-            pathlib.Path(__file__).parent.joinpath("deconvolution.mat")
+        X = np.load(
+            pathlib.Path(__file__).parent.joinpath("deconvolution.npy")
         )
-        X = np.array(M["H"])
         w_true = np.zeros(X.shape[1])
         s_true = np.random.choice(X.shape[1], self.k, replace=False)
         w_true[s_true] = np.random.randn(self.k)
