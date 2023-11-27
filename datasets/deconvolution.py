@@ -15,11 +15,6 @@ class Dataset(BaseDataset):
         ],
     }
 
-    def __init__(self, k, snr, random_state=None):
-        self.k = k
-        self.snr = snr
-        self.random_state = random_state
-
     def get_data(self):
         if self.random_state:
             np.random.seed(self.random_state)

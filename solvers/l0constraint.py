@@ -9,6 +9,7 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     name = "l0constraint"
     stopping_criterion = RunOnGridCriterion(grid=np.linspace(0, 0.1, 10))
+
     install_cmd = "conda"
     requirements = ["pip:gurobipy"]
 
@@ -37,9 +38,7 @@ class Solver(BaseSolver):
         model.setParam("IntFeasTol", 1e-8)
         model.optimize()
 
-        self.k = k
         self.w = w_var.X * (z_var.X > 0.5)
-        self.solve_time = model.Runtime
 
     def get_result(self):
-        return dict(k=self.k, w=self.w, solve_time=self.solve_time)
+        return dict(w=self.w)

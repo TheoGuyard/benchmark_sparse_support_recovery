@@ -1,12 +1,11 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 with safe_import_context() as import_ctx:
-    import time
     import numpy as np
     import warnings
     from sklearn.linear_model import Lars
     from scipy.linalg import lstsq
-    from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
@@ -28,7 +27,6 @@ class Solver(BaseSolver):
         # target in the solution, i.e., the fraction of non-zero entries.
         k = int(np.floor(grid_value * self.X.shape[1]))
 
-        start_time = time.time()
         if k == 0:
             w = np.zeros(self.X.shape[1])
         else:
@@ -45,9 +43,7 @@ class Solver(BaseSolver):
                 ww = ww[0]
                 w[w != 0] = ww
 
-        self.k = k
         self.w = w
-        self.solve_time = time.time() - start_time
 
     def get_result(self):
-        return dict(k=self.k, w=self.w, solve_time=self.solve_time)
+        return dict(w=self.w)

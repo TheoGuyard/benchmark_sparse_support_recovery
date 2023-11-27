@@ -12,6 +12,7 @@ with safe_import_context() as import_ctx:
         auc,
         dist_to_supp,
     )
+    from benchmark_utils.datasets import compute_w_l0pb # noqa
 
 
 class Objective(BaseObjective):
@@ -22,6 +23,11 @@ class Objective(BaseObjective):
 
     name = "Sparse support recovery"
     parameters = {"nb_folds": [10]}
+
+    # We need to install gurobi to compute the solution of the L0 problem
+    # in each dataset.
+    install_cmd = "conda"
+    requirements = ["pip:gurobipy"]
 
     def set_data(self, X, y, w_true=None, w_l0pb=None):
         """A dataset must provide the data `X` and `y`. It may also give the
@@ -37,9 +43,9 @@ class Objective(BaseObjective):
         self.w_l0pb = w_l0pb
 
     def get_one_result(self):
-        return np.zeros(self.X.shape[1])
+        return dict(w=np.zeros(self.X.shape[1]))
 
-    def evaluate_result(self, k, w, solve_time):
+    def evaluate_result(self, w):
         """The `run` method in the solvers must return the the sparsity
         targeted `k`, the solution constructed `w` and the solution time.
         Depending on whether `w_true` and `w_l0pb` are available in the
@@ -51,7 +57,6 @@ class Objective(BaseObjective):
         metrics["value"] = 0.5 * np.linalg.norm(self.y - self.X @ w, 2) ** 2
         metrics["n_nnz"] = np.sum(w != 0)
         metrics["snr_y"] = snr(self.y, self.X @ w)
-        metrics["solve_time"] = solve_time
         metrics["cv_score"] = cv_score(self.X, self.y, w, self.nb_folds)
 
         # Metrics with respect to the L0-problem solution (if available)
