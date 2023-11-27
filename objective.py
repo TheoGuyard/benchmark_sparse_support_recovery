@@ -3,6 +3,7 @@ from benchopt import BaseObjective, safe_import_context
 with safe_import_context() as import_ctx:
     import numpy as np
     from benchmark_utils.metrics import (
+        cv_score,
         snr,
         fpr,
         fnr,
@@ -20,7 +21,7 @@ class Objective(BaseObjective):
     """
 
     name = "Sparse support recovery"
-    parameters = {}
+    parameters = {"nb_folds": [10]}
 
     def set_data(self, X, y, w_true=None, w_l0pb=None):
         """A dataset must provide the data `X` and `y`. It may also give the
@@ -51,6 +52,7 @@ class Objective(BaseObjective):
         metrics["n_nnz"] = np.sum(w != 0)
         metrics["snr_y"] = snr(self.y, self.X @ w)
         metrics["solve_time"] = solve_time
+        metrics["cv_score"] = cv_score(self.X, self.y, w, self.nb_folds)
 
         # Metrics with respect to the L0-problem solution (if available)
         if self.w_l0pb is not None:

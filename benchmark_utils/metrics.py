@@ -4,6 +4,17 @@ with safe_import_context() as import_ctx:
     import numpy as np
 
 
+def cv_score(X, y, w, nb_folds):
+    if nb_folds > y.size:
+        nb_folds = y.size
+    fold_size = y.size // nb_folds
+    scores = []
+    for _ in range(nb_folds):
+        ind = np.random.permutation(y.size)[:fold_size]
+        scores.append(0.5 * np.linalg.norm(y[ind] - X[ind, :] @ w, 2) ** 2)
+    return np.mean(scores)
+
+
 def snr(w_true, w):
     if np.linalg.norm(w_true - w, 2) == 0.0:
         return np.inf
