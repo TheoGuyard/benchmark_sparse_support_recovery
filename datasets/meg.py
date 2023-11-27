@@ -23,7 +23,6 @@ class Dataset(BaseDataset):
         self.semi_simulated = semi_simulated
         self.random_state = random_state
 
-    @staticmethod
     def _load_meg_data(self):
         dataset = fetch_openml(data_id=43884)
         all_data = dataset.data.to_numpy()
