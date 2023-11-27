@@ -19,3 +19,11 @@ def compute_w_l0pb(y, X, w_true):
     model.setParam("IntFeasTol", 1e-8)
     model.optimize()
     return w_var.X * (z_var.X > 0.5)
+
+
+def generate_sources(n, k, random_state=None):
+    rng = np.random.RandomState(random_state)
+    w_true = rng.randn(n)
+    w_true[rng.choice(n, n - k, replace=False)] = 0.0
+
+    return w_true
