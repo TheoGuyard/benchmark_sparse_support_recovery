@@ -4,6 +4,7 @@ dataset:
   - simulated
   - deconvolution
   - lattice
+  - portfolio
 solver:
   - iht
   - l0constraint
