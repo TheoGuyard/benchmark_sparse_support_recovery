@@ -12,6 +12,7 @@ with safe_import_context() as import_ctx:
         auc,
         dist_to_supp,
     )
+    from benchmark_utils.datasets import compute_w_l0pb # noqa
 
 
 class Objective(BaseObjective):
