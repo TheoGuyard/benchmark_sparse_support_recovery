@@ -24,13 +24,13 @@ def snr(w_true, w):
 def fpr(w_true, w):
     if np.sum(w_true == 0.0) == 0.0:
         return 1.0
-    return np.sum((w_true != 0.0) * (w == 0.0)) / np.sum(w_true == 0.0)
+    return np.sum((w_true == 0.0) * (w != 0.0)) / np.sum(w_true == 0.0)
 
 
 def fnr(w_true, w):
     if np.sum(w_true != 0.0) == 0.0:
         return 1.0
-    return np.sum((w_true == 0.0) * (w != 0.0)) / np.sum(w_true != 0.0)
+    return np.sum((w_true != 0.0) * (w == 0.0)) / np.sum(w_true != 0.0)
 
 
 def tpr(w_true, w):
