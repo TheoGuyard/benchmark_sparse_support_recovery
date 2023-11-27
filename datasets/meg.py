@@ -17,13 +17,7 @@ class Dataset(BaseDataset):
         ],
     }
 
-    def __init__(self, k, snr, semi_simulated, random_state=None):
-        self.k = k
-        self.snr = snr
-        self.semi_simulated = semi_simulated
-        self.random_state = random_state
-
-    def _load_meg_data(self):
+    def load_meg_data(self):
         dataset = fetch_openml(data_id=43884)
         all_data = dataset.data.to_numpy()
         X = all_data[:, :7498]
@@ -41,7 +35,7 @@ class Dataset(BaseDataset):
         return X, y, w_true
 
     def get_data(self):
-        X, y, w_true = self._load_meg_data(self)
+        X, y, w_true = self.load_meg_data(self)
         self.X, self.y, self.w_true = X, y, w_true
 
         return dict(X=X, y=y, w_true=w_true)
