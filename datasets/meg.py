@@ -35,7 +35,7 @@ class Dataset(BaseDataset):
         return X, y, w_true
 
     def get_data(self):
-        X, y, w_true = self.load_meg_data(self)
+        X, y, w_true = self.load_meg_data()
         self.X, self.y, self.w_true = X, y, w_true
 
         return dict(X=X, y=y, w_true=w_true)
