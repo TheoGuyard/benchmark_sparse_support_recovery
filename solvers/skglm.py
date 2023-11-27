@@ -1,11 +1,10 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 with safe_import_context() as import_ctx:
-    import time
     import numpy as np
     from scipy.linalg import lstsq
     from skglm import Lasso, ElasticNet, MCPRegression
-    from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):
@@ -48,7 +47,6 @@ class Solver(BaseSolver):
         else:
             raise ValueError(f"Unknown estimator {self.estimator}")
 
-        start_time = time.time()
         w = np.zeros(self.X.shape[1])
         for alpha in self.alphaGrid:
             w_old = w
@@ -68,9 +66,7 @@ class Solver(BaseSolver):
                 ww = ww[0]
                 w[w != 0] = ww
 
-        self.k = k
         self.w = w
-        self.solve_time = time.time() - start_time
 
     def get_result(self):
-        return dict(k=self.k, w=self.w, solve_time=self.solve_time)
+        return dict(w=self.w)
