@@ -8,7 +8,7 @@ with safe_import_context() as import_ctx:
 class Dataset(BaseDataset):
 
     name = "libsvm"
-    parameters = {'dataset': ["abalon", "bodyfat", "eunite2001", "housing"]}
+    parameters = {'dataset': ["bodyfat", "eunite2001", "housing"]}
     install_cmd = 'conda'
     requirements = ['pip:git+https://github.com/mathurinm/libsvmdata@main']
 
