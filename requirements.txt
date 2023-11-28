@@ -15,6 +15,7 @@ idna==3.4
 joblib==1.3.2
 kiwisolver==1.4.5
 l0learn==0.1.1
+libsvmdata==0.4.1
 line-profiler==4.1.1
 Mako==1.2.4
 MarkupSafe==2.1.3
