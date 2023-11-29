@@ -1,6 +1,6 @@
 # Benchopt benchmark for sparse support recovery problems
 
-[![Build status](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/workflows/Tests/badge.svg)](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/actions)
+[![Tests](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/actions/workflows/main.yml/badge.svg)](https://github.com/TheoGuyard/benchmark_sparse_support_recovery/actions/workflows/main.yml)
 [![Python 3.9](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/release/python-390/)
 
 [Benchopt](https://benchopt.github.io) is a package to simplify and make more transparent and
