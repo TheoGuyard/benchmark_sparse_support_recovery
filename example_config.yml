@@ -5,6 +5,7 @@ dataset:
   - deconvolution
   - lattice
   - libsvm
+  - ode
   - portfolio
 solver:
   - iht
