@@ -4,7 +4,7 @@ from benchmark_utils.stopping_criterion import RunOnGridCriterion
 with safe_import_context() as import_ctx:
     import numpy as np
     from gurobipy import Model, GRB
-    
+
 
 class Solver(BaseSolver):
     name = "l0constraint"
