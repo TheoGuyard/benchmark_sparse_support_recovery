@@ -30,4 +30,4 @@ class Dataset(BaseDataset):
         else:
             w_true = None
             y = f['y']
-        return dict(X=X, y=y, w_true=w_true, w_l0pb=None)
+        return dict(X=X, y=y, w_true=w_true)

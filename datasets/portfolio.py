@@ -18,4 +18,4 @@ class Dataset(BaseDataset):
         p = f["p" + self.instance]
         X = np.linalg.cholesky(self.ratio * S).T
         y = np.linalg.lstsq(X.T, (1.0 - self.ratio) * p, rcond=None)[0]
-        return dict(X=X, y=y, w_true=None, w_l0pb=None)
+        return dict(X=X, y=y, w_true=None)

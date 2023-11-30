@@ -335,4 +335,4 @@ class Dataset(BaseDataset):
         y = v.T.flatten()
         w_true = system.true_coefs.flatten()
 
-        return dict(X=X, y=y, w_true=w_true, w_l0pb=None)
+        return dict(X=X, y=y, w_true=w_true)

@@ -3,8 +3,8 @@ from benchopt import safe_import_context
 
 
 with safe_import_context() as import_ctx:
-    from sklearn.datasets import fetch_openml
     import numpy as np
+    from sklearn.datasets import fetch_openml
     from benchmark_utils.datasets import generate_sources
 
 
