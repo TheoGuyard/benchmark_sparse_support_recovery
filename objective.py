@@ -3,16 +3,15 @@ from benchopt import BaseObjective, safe_import_context
 with safe_import_context() as import_ctx:
     import numpy as np
     from benchmark_utils.metrics import (
-        cv_score,
         snr,
         fpr,
         fnr,
         tpr,
         tnr,
+        f1score,
         auc,
         dist_to_supp,
     )
-    from benchmark_utils.datasets import compute_w_l0pb # noqa
 
 
 class Objective(BaseObjective):
@@ -22,64 +21,33 @@ class Objective(BaseObjective):
     """
 
     name = "Sparse support recovery"
-    parameters = {"nb_folds": [10]}
 
-    # We need to install gurobi to compute the solution of the L0 problem
-    # in each dataset.
-    install_cmd = "conda"
-    requirements = ["pip:gurobipy"]
-
-    def set_data(self, X, y, w_true=None, w_l0pb=None):
-        """A dataset must provide the data `X` and `y`. It may also give the
-        ground truth value `w_true` and the solution `w_l0pb` of the problem
-
-            min 0.5 * ||y - Xw||_2^2
-            st  ||w||_0 <= k
-
-        with `k=norm(w_true, 0)`."""
+    def set_data(self, X, y, w_true=None):
         self.X = X
         self.y = y
         self.w_true = w_true
-        self.w_l0pb = w_l0pb
 
     def get_one_result(self):
         return dict(w=np.zeros(self.X.shape[1]))
 
     def evaluate_result(self, w):
-        """The `run` method in the solvers must return the the sparsity
-        targeted `k`, the solution constructed `w` and the solution time.
-        Depending on whether `w_true` and `w_l0pb` are available in the
-        dataset, different metrics are computed."""
-
         metrics = {}
 
-        # Solver metrics
-        metrics["value"] = 0.5 * np.linalg.norm(self.y - self.X @ w, 2) ** 2
+        r = self.y - self.X @ w
+        metrics["value"] = ((r @ r) / r.size)
         metrics["n_nnz"] = np.sum(w != 0)
         metrics["snr_y"] = snr(self.y, self.X @ w)
-        metrics["cv_score"] = cv_score(self.X, self.y, w, self.nb_folds)
 
-        # Metrics with respect to the L0-problem solution (if available)
-        if self.w_l0pb is not None:
-            metrics["snr_y_l0pb"] = snr(self.y, self.X @ self.w_l0pb)
-            metrics["snr_w_l0pb"] = snr(self.w_l0pb, w)
-            metrics["tpr_w_l0pb"] = tpr(self.w_l0pb, w)
-            metrics["fpr_w_l0pb"] = fpr(self.w_l0pb, w)
-            metrics["tnr_w_l0pb"] = tnr(self.w_l0pb, w)
-            metrics["fnr_w_l0pb"] = fnr(self.w_l0pb, w)
-            metrics["auc_w_l0pb"] = auc(self.w_l0pb, w)
-            metrics["dist_to_supp_w_l0pb"] = dist_to_supp(self.w_l0pb, w)
-
-        # Metrics with respect to the ground truth solution (if available)
         if self.w_true is not None:
             metrics["snr_y_true"] = snr(self.y, self.X @ self.w_true)
-            metrics["snr_w_true"] = snr(self.w_true, w)
-            metrics["tpr_w_true"] = tpr(self.w_true, w)
-            metrics["fpr_w_true"] = fpr(self.w_true, w)
-            metrics["tnr_w_true"] = tnr(self.w_true, w)
-            metrics["fnr_w_true"] = fnr(self.w_true, w)
-            metrics["auc_w_true"] = auc(self.w_true, w)
-            metrics["dist_to_supp_w_true"] = dist_to_supp(self.w_true, w)
+            metrics["snr_w"] = snr(self.w_true, w)
+            metrics["tpr"] = tpr(self.w_true, w)
+            metrics["fpr"] = fpr(self.w_true, w)
+            metrics["tnr"] = tnr(self.w_true, w)
+            metrics["fnr"] = fnr(self.w_true, w)
+            metrics["f1score"] = f1score(self.w_true, w)
+            metrics["auc"] = auc(self.w_true, w)
+            metrics["dist_to_supp"] = dist_to_supp(self.w_true, w)
 
         return metrics
 
