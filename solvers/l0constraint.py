@@ -1,9 +1,9 @@
 from benchopt import BaseSolver, safe_import_context
+from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
     from gurobipy import Model, GRB
-    from benchmark_utils.stopping_criterion import RunOnGridCriterion
 
 
 class Solver(BaseSolver):

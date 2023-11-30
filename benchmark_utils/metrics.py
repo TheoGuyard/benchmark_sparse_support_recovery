@@ -4,17 +4,6 @@ with safe_import_context() as import_ctx:
     import numpy as np
 
 
-def cv_score(X, y, w, nb_folds):
-    if nb_folds > y.size:
-        nb_folds = y.size
-    fold_size = y.size // nb_folds
-    scores = []
-    for _ in range(nb_folds):
-        ind = np.random.permutation(y.size)[:fold_size]
-        scores.append(0.5 * np.linalg.norm(y[ind] - X[ind, :] @ w, 2) ** 2)
-    return np.mean(scores)
-
-
 def snr(w_true, w):
     if np.linalg.norm(w_true - w, 2) == 0.0:
         return np.inf
@@ -43,6 +32,15 @@ def tnr(w_true, w):
     if np.sum(w_true == 0.0) == 0.0:
         return 1.0
     return np.sum((w_true == 0.0) * (w == 0.0)) / np.sum(w_true == 0.0)
+
+
+def f1score(w_true, w):
+    tp = np.sum(w_true * w)
+    fp = np.sum((w_true == 0.0) * w)
+    fn = np.sum(w_true * (w == 0.0))
+    if 2.0 * tp + fp + fn == 0.0:
+        return 1.0
+    return 2.0 * tp / (2.0 * tp + fp + fn)
 
 
 def auc(w_true, w, num_rounds=10_000):

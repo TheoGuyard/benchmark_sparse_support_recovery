@@ -14,4 +14,4 @@ class Dataset(BaseDataset):
 
     def get_data(self):
         X, y = fetch_libsvm(self.dataset)
-        return dict(X=X, y=y, w_true=None, w_l0pb=None)
+        return dict(X=X, y=y, w_true=None)

@@ -3,7 +3,6 @@ from benchopt import BaseDataset, safe_import_context
 with safe_import_context() as import_ctx:
     import numpy as np
     import pathlib
-    from benchmark_utils.datasets import compute_w_l0pb
 
 
 class Dataset(BaseDataset):
@@ -28,5 +27,4 @@ class Dataset(BaseDataset):
         e = np.random.randn(X.shape[0])
         e *= np.sqrt((y @ y) / (self.snr * (e @ e)))
         y += e
-        w_l0pb = compute_w_l0pb(y, X, w_true)
-        return dict(X=X, y=y, w_true=w_true, w_l0pb=w_l0pb)
+        return dict(X=X, y=y, w_true=w_true)
