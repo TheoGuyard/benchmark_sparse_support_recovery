@@ -32,28 +32,28 @@ Visit [Benchopt documentation](https://benchopt.github.io/api.html) for more det
 ## Datasets
 
 A dataset must provide the data $y$ and $X$.
-Optionnally, it can give the ground truth solution $w^{\dagger}$ and the solution of the L0-constrained least-squares problem $w^{\ell_0}$ where the sparsity amount targeted is the one of the ground truth.
-Some of the performance metrics will only be evaluated if $w^{\dagger}$ and/or $w^{\ell_0}$ are provided.
+From these data and the solutions provided by the solvers to the sparse support recovery problem, the benchmark computes various performance metrics.
+Optionally, the ground truth solution $w^{\dagger}$ can be provided by the dataset which allows for evaluating extra performance metrics.
+The following datasets are currently available:
 
-The following datasets are available:
-
-* **Simulated:** The data is generated via the `make_correlated_data` function available in [benchopt](https://benchopt.github.io). The size of the matrix $X$, its correlation amount in its columns, the noise level in $y$ and the sparsity density in $w^{\dagger}$ can be specified.
-* **Deconvolution:** The data is the one used in the Section V of [this paper](https://www.ecosia.org/search?q=Exact+Sparse+Approximation+Problems+via+Mixed-Integer+Programming:+Formulations+and+Computational+Performance). The matrix $X$ is the discrete convolution matrix corresponding to the 21-sample impulse response shown in the Figure 1 of the paper. The ground truth $w^{\dagger}$ has spikes of random locations and amplitudes. The number of spikes in $w^{\dagger}$ and the noise in $y$ can be specified.
-
-> If you want to contribute and add a new dataset, the helper function `compute_w_l0pb` in `benchmark_utils/datasets.py` allows you to compute $w^{\ell_0}$ from $y$, $X$ and $w^{\dagger}$.
-
+* **deconvolution:** This dataset corresponds to sparse deconvolution problems linked to signal processing applications. The linear operator $X$ is a discrete convolution matrix corresponding to a 21-sample of a sinus-cardinal impulse response. The ground-truth is constructed with non-zero entries at random positions and with an amplitude sampled from a normal distribution. The observation is set as $y = Xw^{\dagger} + \epsilon$ where $\noise$ is a centered Gaussian noise whose variance is tuned to meet a given signal-to-noise ratio.
+* **lattice:** This dataset is linked to the construction of sparse predictive lattice models for atomic ordering analysis. It is composed of an operator $X$ corresponding to the correlation of atomic structures and an observation $y$ corresponding to energy levels predicted by the density-functional theory. No ground truth are available.
+* **libsvm:** This dataset contains various machine-learning sparse regression datasets drawn from the `libsvm` database. Each dataset provides a feature matrix $X$ and a target vector $y$ intended to be linked through a linear model. No ground truth are provided.
+* **meg:** This dataset is linked to MEG (Magneto-encephalography) data from an auditory stimulation experiment using 305 sensors. The linear operator $X$ corresponds to the MEG operator. We either generate synthetically a ground truth $w^{\dagger}$ and an observation $y$ as in the **simulated** dataset or provide an observation $y$ corresponding to a real-world experiment, but for which the ground truth is unavailable.
+* **ode:** This dataset aims at recovering the parametrization of dynamical systems from a finite number of observations of their trajectory, assuming that they are expressed within a dictionary of basis functions (polynomials, trigonometric, ...). Here, $y$ corresponds to the observations of the trajectory, $X$ concatenates the basis functions evaluated at the observation times and $w^{\dagger}$ is the true parametrization of the dynamical system.
+* **portfolio:** This dataset contains five different couples $(X,y)$ representing the mean return and the correlation of some assets and corresponding to portfolio optimization problems. These data are provided by the OR library. No ground truth vectors are available.
+* **simulated:** This dataset generates synthetic data for the problem. The linear operator $y$ is built from an auto-regressive model, the ground-truth $w^{\dagger}$ is constructed with non-zero entries at random positions and with an amplitude sampled from a normal distribution and the observation is set as $y = Xw^{\dagger} + \epsilon$ where $\epsilon$ is a centered Gaussian noise whose variance is tuned to meet a given signal-to-noise ratio. Different generation parameters such as the problem dimensionality, the auto-regressive model correlation and the signal-to-noise ratio can be controlled. 
 
 ## Solvers
 
-In this bechmark, the `run` method of [benchopt](https://benchopt.github.io) is to be called over a grid of parameters $d \in [0,1]$ where $d$ specifies the target proportion of sparsity.
+In this benchmark, the solvers are given the tuple $(y,X)$ and a target sparsity amount $\rho \in [0,1]$ and output some solution to the sparse recovery problem with at most $k = ⌊\rho n⌋$ non-zero elements, where $n$ is the size of $w$.
+Our benchmark currently includes the following solvers.
 
-The following solvers are available:
-
-* **IHT:** Iterative Hard Thresholding algorithm that approximately solves L0-constrained least-squares problems. See [this paper](https://ieeexplore.ieee.org/abstract/document/1660731?casa_token=fTzhzl62-TMAAAAA:qGzh7V1ewWv81eFlTbepaiaO5yBO80H_6oHN4ovyeO-6dMB8A6PuccoB3-zfE8zz2yt16dSSIQ) for more details.
-* **L0constraint:** Exact solution method for L0-constrained least-squares problems using a Mixed-Integer-Programming solver. The problem is formulated via Big-M constriants with $M = 10  \|\hat{w}\|_{\infty}$ where $\hat{w}$ is the solution of the least-squares problem $y = Xw$ returned by `scipy.linalg.lstsq`. See [this paper](https://ieeexplore.ieee.org/abstract/document/7313004?casa_token=vVs9O6nUNwUAAAAA:LNxXd1jMGr6EE-N0Gx4YaM8ZdaWzPWkZzbMsTQJaTjnY9b4U4n23JalnjBZvWGPpyL7U9U2V6Q) for more details.
-* **L0learn:** Uses [l0learn](https://github.com/hazimehh/L0Learn) package that approximately construct a path for L0-penalized least-squares problems and extract the best $k$-sparse solution. See [this paper](https://arxiv.org/abs/2202.04820) for more details.
-* **Lars:** `Lars` algorithm from [scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lars.html).
-* **OMP:** `OrthogonalMatchingPursuit` algorithm from [scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.OrthogonalMatchingPursuit.html#sklearn.linear_model.OrthogonalMatchingPursuit).
-* **Skglm:** `Lasso` and `MCPRegression` estimators from [skglm](https://contrib.scikit-learn.org/skglm/).
+* **iht:** Approximate resolution of the $\ell_0$-constrained least-squares problem via the Iterative Hard Thresholding algorithm. This algorithm amounts to applying a projected gradient algorithm on an $\ell_0$-constrained least-squares problem. The thresholding step only keeps the $k$-largest entries in absolute value. 
+* **l0constraint:** Exact resolution of the $\ell_0$-constrained least-squares problem using the MIP  solver `gurobi`. The problem is formulated into the MIP formalism via a Big-M constraint where the Big-M value is set as $M = 10 \times \|X^{\dagger}y\|_{\infty}$, where $X^{\dagger}$ denotes the pseudo-inverse of $X$.
+* **l0learn:** Approximate $\ell_0$-penalized least-squares problem solver from [l0learn](https://github.com/hazimehh/L0Learn). The solver fits a regularization path, *i.e.*, it progressively decreases the $\ell_0$-penalty weight and returns the last solution with $k$ non-zero elements in the regularization path.
+* **lars:** Lars algorithm from [scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lars.html).
+* **omp:** Orthogonal Matching Pursuit algorithm from [scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.OrthogonalMatchingPursuit.html#sklearn.linear_model.OrthogonalMatchingPursuit).
+* **skglm:** Lasso, Elastic-Net and MCP problem solver from [skglm](https://contrib.scikit-learn.org/skglm/). The solver fits a regularization path, *i.e.*, it progressively decreases the Lasso, Elastic-Net or MCP penalty weight, and returns the last solution with $k$ non-zero elements in the regularization path.
 
 > The grid of parameters $d$ can be handeled in the solvers using the `RunOnGridCriterion` available in `benchmark_utils/stopping_criterion.py`. If you want to contribute and add a new solver, you can refer to any existing solver for an example of implementation. 
