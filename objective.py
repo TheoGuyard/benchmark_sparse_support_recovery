@@ -37,10 +37,15 @@ class Objective(BaseObjective):
         metrics["value"] = ((r @ r) / r.size)
         metrics["n_nnz"] = np.sum(w != 0)
         metrics["snr_y"] = snr(self.y, self.X @ w)
+        metrics["snr_y_dB"] = snr(self.y, self.X @ w, dB=True)
 
         if self.w_true is not None:
             metrics["snr_y_true"] = snr(self.y, self.X @ self.w_true)
+            metrics["snr_y_true_dB"] = snr(
+                self.y, self.X @ self.w_true, dB=True
+            )
             metrics["snr_w"] = snr(self.w_true, w)
+            metrics["snr_w_dB"] = snr(self.w_true, w, dB=True)
             metrics["tpr"] = tpr(self.w_true, w)
             metrics["fpr"] = fpr(self.w_true, w)
             metrics["tnr"] = tnr(self.w_true, w)

@@ -4,10 +4,11 @@ with safe_import_context() as import_ctx:
     import numpy as np
 
 
-def snr(w_true, w):
+def snr(w_true, w, dB=False):
     if np.linalg.norm(w_true - w, 2) == 0.0:
         return np.inf
-    return np.linalg.norm(w_true, 2) / np.linalg.norm(w_true - w, 2)
+    snr = np.linalg.norm(w_true, 2) / np.linalg.norm(w_true - w, 2)
+    return 10. * np.log10(snr) if dB else snr
 
 
 def fpr(w_true, w):
