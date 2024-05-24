@@ -36,9 +36,9 @@ def tnr(w_true, w):
 
 
 def f1score(w_true, w):
-    tp = np.sum(w_true * w)
-    fp = np.sum((w_true == 0.0) * w)
-    fn = np.sum(w_true * (w == 0.0))
+    tp = np.sum((w_true != 0.0) * (w != 0))
+    fp = np.sum((w_true == 0.0) * (w != 0))
+    fn = np.sum((w_true !=0) * (w == 0.0))
     if 2.0 * tp + fp + fn == 0.0:
         return 1.0
     return 2.0 * tp / (2.0 * tp + fp + fn)
