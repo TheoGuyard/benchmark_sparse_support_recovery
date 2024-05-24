@@ -1,4 +1,5 @@
 from benchopt import safe_import_context
+from sklearn.metrics import f1score
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -36,12 +37,7 @@ def tnr(w_true, w):
 
 
 def f1score(w_true, w):
-    tp = np.sum((w_true != 0.0) * (w != 0))
-    fp = np.sum((w_true == 0.0) * (w != 0))
-    fn = np.sum((w_true !=0) * (w == 0.0))
-    if 2.0 * tp + fp + fn == 0.0:
-        return 1.0
-    return 2.0 * tp / (2.0 * tp + fp + fn)
+    return f1score(w_true != 0, w != 0)
 
 
 def auc(w_true, w, num_rounds=10_000):
