@@ -8,7 +8,6 @@ with safe_import_context() as import_ctx:
         fnr,
         tpr,
         tnr,
-        f1score,
         auc,
         dist_to_supp,
     )
