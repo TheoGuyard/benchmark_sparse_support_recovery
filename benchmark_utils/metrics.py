@@ -2,7 +2,6 @@ from benchopt import safe_import_context
 
 with safe_import_context() as import_ctx:
     import numpy as np
-    from sklearn.metrics import f1_score
 
 
 def snr(w_true, w, dB=False):
@@ -34,10 +33,6 @@ def tnr(w_true, w):
     if np.sum(w_true == 0.0) == 0.0:
         return 1.0
     return np.sum((w_true == 0.0) * (w == 0.0)) / np.sum(w_true == 0.0)
-
-
-def f1score(w_true, w):
-    return f1_score(w_true != 0, w != 0)
 
 
 def auc(w_true, w, num_rounds=10_000):
