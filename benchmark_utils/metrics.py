@@ -1,5 +1,5 @@
 from benchopt import safe_import_context
-from sklearn.metrics import f1score
+from sklearn.metrics import f1_score
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -37,7 +37,7 @@ def tnr(w_true, w):
 
 
 def f1score(w_true, w):
-    return f1score(w_true != 0, w != 0)
+    return f1_score(w_true != 0, w != 0)
 
 
 def auc(w_true, w, num_rounds=10_000):
