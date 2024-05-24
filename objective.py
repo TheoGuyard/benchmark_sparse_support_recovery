@@ -8,10 +8,10 @@ with safe_import_context() as import_ctx:
         fnr,
         tpr,
         tnr,
-        f1score,
         auc,
         dist_to_supp,
     )
+    from sklearn.metrics import f1_score
 
 
 class Objective(BaseObjective):
@@ -21,6 +21,9 @@ class Objective(BaseObjective):
     """
 
     name = "Sparse support recovery"
+    install_cmd = 'conda'
+    requirements = ['scikit-learn']
+
 
     def set_data(self, X, y, w_true=None):
         self.X = X
@@ -50,7 +53,7 @@ class Objective(BaseObjective):
             metrics["fpr"] = fpr(self.w_true, w)
             metrics["tnr"] = tnr(self.w_true, w)
             metrics["fnr"] = fnr(self.w_true, w)
-            metrics["f1score"] = f1score(self.w_true, w)
+            metrics["f1score"] = f1_score(self.w_true != 0, w != 0)
             metrics["auc"] = auc(self.w_true, w)
             metrics["dist_to_supp"] = dist_to_supp(self.w_true, w)
 

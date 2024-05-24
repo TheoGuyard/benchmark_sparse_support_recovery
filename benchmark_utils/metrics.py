@@ -35,15 +35,6 @@ def tnr(w_true, w):
     return np.sum((w_true == 0.0) * (w == 0.0)) / np.sum(w_true == 0.0)
 
 
-def f1score(w_true, w):
-    tp = np.sum(w_true * w)
-    fp = np.sum((w_true == 0.0) * w)
-    fn = np.sum(w_true * (w == 0.0))
-    if 2.0 * tp + fp + fn == 0.0:
-        return 1.0
-    return 2.0 * tp / (2.0 * tp + fp + fn)
-
-
 def auc(w_true, w, num_rounds=10_000):
     """AUC metric for regression data. See https://towardsdatascience.com/how-to-calculate-roc-auc-score-for-regression-models-c0be4fdf76bb."""  # noqa: E501
 
