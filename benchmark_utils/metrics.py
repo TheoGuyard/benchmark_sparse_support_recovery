@@ -1,8 +1,8 @@
 from benchopt import safe_import_context
-from sklearn.metrics import f1_score
 
 with safe_import_context() as import_ctx:
     import numpy as np
+    from sklearn.metrics import f1_score
 
 
 def snr(w_true, w, dB=False):
